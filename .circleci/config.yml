@@ -4,9 +4,6 @@ defaults: &defaults
   docker:
   - image: deliveroo/circleci:0.2.2
 
-  environment:
-  - ENVIRONMENT_APP_NAME: nginx_sidecar
-
 remote_docker: &remote_docker
   docker_layer_caching: true
   reusable: true
@@ -16,9 +13,7 @@ build_steps: &build_steps
   steps:
 
   - setup_remote_docker:
-      docker_layer_caching: true
-      reusable: true
-      version: 17.11.0-ce
+      <<: *remote_docker
 
   - checkout
 
@@ -46,9 +41,7 @@ push_steps: &push_steps
       at: workspace
 
   - setup_remote_docker:
-      docker_layer_caching: true
-      reusable: true
-      version: 17.11.0-ce
+      <<: *remote_docker
 
   - run:
       name: Load CI Image
@@ -62,8 +55,8 @@ push_steps: &push_steps
         `print_env ${ENVIRONMENT_APP_NAME}`
         push_image_to_ecr \
           --image-name "${CIRCLE_PROJECT_REPONAME}" \
-          --ecr-repo $AWS_ECR_REPO_URL \
-          --ecr-region $AWS_REGION
+          --ecr-repo ${AWS_ECR_REPO_URL} \
+          --aws-region ${AWS_ECR_REPO_REGION}
 
 filter_staging: &filter_staging
   filters:
@@ -87,6 +80,7 @@ jobs:
     <<: *push_steps
 
     environment:
+      ENVIRONMENT_APP_NAME: nginx_sidecar
       ENVIRONMENT_NAME: staging
 
   push_production:
@@ -94,6 +88,7 @@ jobs:
     <<: *push_steps
 
     environment:
+      ENVIRONMENT_APP_NAME: nginx_sidecar
       ENVIRONMENT_NAME: production
 
 workflows:
