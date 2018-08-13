@@ -1,4 +1,4 @@
-FROM nginx:latest
+FROM nginx:stable
 
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
