@@ -1,0 +1,92 @@
+# A single worker is enough for load balancing and reverse proxing.
+# While disk I/O can block an nginx worker, it's possible to enable
+# async read and send for static files.
+#
+worker_processes 1;
+
+# The limit on the maximum number of open files for worker processes.
+# This overrides the OS limit for the user the workers run as:
+#   ulimit -a | grep 'open files'
+#
+# This value must be equal or higher than the worker_connections value.
+#
+worker_rlimit_nofile 4096;
+
+# Log to stdout.
+# Use the stdout of init on Docker to get the logs to the log drain.
+#
+error_log /proc/1/fd/1 warn;
+
+pid /var/run/nginx.pid;
+
+
+events {
+  # The maximum number of simultaneous connections that can be
+  # opened by a worker process. This limit is shared between
+  # client connections and upstream connections.
+  #
+  worker_connections 4096;
+
+  # "on" if nginx worker_processes > 1
+  #
+  accept_mutex off;
+}
+
+
+http {
+  server_tokens off;
+
+  include /etc/nginx/mime.types;
+  default_type application/octet-stream;
+
+  log_format  main  '[nginx] $remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+
+  # Log to stdout.
+  # Use the stdout of init on Docker to get the logs to the log drain.
+  #
+  access_log /proc/1/fd/1 main;
+
+  tcp_nodelay on;
+
+  keepalive_timeout 20s; # default 75s
+
+  gzip on;
+  gzip_http_version 1.0;
+  gzip_proxied any;
+  gzip_vary on;
+  gzip_min_length 500;
+  gzip_disable "MSIE [1-6]\.";
+  gzip_types text/plain text/xml text/css
+             text/comma-separated-values
+             text/javascript application/x-javascript
+             application/javascript application/json
+             application/atom+xml;
+
+  # According to the HTTP standard, headers with underscores are perfectly valid.
+  # However, nginx defaults to dropping headers containing underscores, as they
+  # might introduce ambiguities when mapping headers to CGI variables.
+  #
+  underscores_in_headers on;
+
+  server {
+    listen <NGINX_PORT> deferred;
+
+    client_max_body_size 5M; # default 1M
+
+    location / {
+      proxy_pass_request_headers on;
+
+      # For NewRelic, time in milliseconds
+      proxy_set_header X-Request-Start "t=${msec}";
+      proxy_set_header X-Queue-Start "t=${msec}";
+
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Real-IP $remote_addr;
+
+      proxy_redirect off; # disable nginx redirect-rewrite logic
+      proxy_pass http://app:<APP_PORT>;
+    }
+  }
+}

@@ -1,0 +1,114 @@
+version: 2
+
+defaults: &defaults
+  docker:
+  - image: deliveroo/circleci:0.2.2
+
+  environment:
+  - ENVIRONMENT_APP_NAME: nginx_sidecar
+
+remote_docker: &remote_docker
+  docker_layer_caching: true
+  reusable: true
+  version: 17.09.0-ce
+
+build_steps: &build_steps
+  steps:
+
+  - setup_remote_docker:
+      docker_layer_caching: true
+      reusable: true
+      version: 17.11.0-ce
+
+  - checkout
+
+  - run:
+      name: Build CI Image
+      command: |
+        docker build -f Dockerfile -t "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" .
+
+  - run:
+      name: Save CI Image
+      command: |
+        mkdir -p workspace
+        docker save "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" \
+            --output "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+
+  - persist_to_workspace:
+      root: workspace
+      paths:
+      - "*.tar"
+
+push_steps: &push_steps
+  steps:
+
+  - attach_workspace:
+      at: workspace
+
+  - setup_remote_docker:
+      docker_layer_caching: true
+      reusable: true
+      version: 17.11.0-ce
+
+  - run:
+      name: Load CI Image
+      command: |
+        docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+
+  - run:
+      name: Push to Image Repository
+      command: |
+        `print_env ${ENVIRONMENT_NAME}`
+        `print_env ${ENVIRONMENT_APP_NAME}`
+        push_image_to_ecr \
+          --image-name "${CIRCLE_PROJECT_REPONAME}" \
+          --ecr-repo $AWS_ECR_REPO_URL \
+          --ecr-region $AWS_REGION
+
+filter_staging: &filter_staging
+  filters:
+    branches:
+      only:
+      - staging
+
+filter_production: &filter_production
+  filters:
+    branches:
+      only:
+      - master
+
+jobs:
+  build:
+    <<: *defaults
+    <<: *build_steps
+
+  push_staging:
+    <<: *defaults
+    <<: *push_steps
+
+    environment:
+      ENVIRONMENT_NAME: staging
+
+  push_production:
+    <<: *defaults
+    <<: *push_steps
+
+    environment:
+      ENVIRONMENT_NAME: production
+
+workflows:
+  version: 2
+
+  build_and_push:
+    jobs:
+      - build
+
+      - push_staging:
+          <<: *filter_staging
+          requires:
+          - build
+
+      - push_production:
+          <<: *filter_production
+          requires:
+          - build
