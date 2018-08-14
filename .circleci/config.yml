@@ -9,87 +9,112 @@ remote_docker: &remote_docker
   reusable: true
   version: 17.09.0-ce
 
-build_steps: &build_steps
-  steps:
+import_image: &import_image
+  name: Import Docker image
+  command: |
+    set -ex
+    docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
 
-  - setup_remote_docker:
-      <<: *remote_docker
+jobs:
+  build:
+    <<: *defaults
 
-  - checkout
+    steps:
+    - setup_remote_docker:
+        <<: *remote_docker
 
-  - run:
-      name: Build CI Image
-      command: |
-        docker build -f Dockerfile -t "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" .
+    - checkout
 
-  - run:
-      name: Save CI Image
-      command: |
-        mkdir -p workspace
-        docker save "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" \
-            --output "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+    - run:
+        name: Build CI Image
+        command: |
+          docker build -f Dockerfile -t "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" .
 
-  - persist_to_workspace:
-      root: workspace
-      paths:
-      - "*.tar"
+    - run:
+        name: Save CI Image
+        command: |
+          mkdir -p workspace
+          docker save "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" \
+              --output "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
 
-push_steps: &push_steps
-  steps:
+    - persist_to_workspace:
+        root: workspace
+        paths:
+        - "*.tar"
 
-  - attach_workspace:
-      at: workspace
+  push_master:
+    <<: *defaults
+    steps:
+    - add_ssh_keys:
+        fingerprints:
+          # Stored in 1password Team:SETI vault `id_rsa_circleci_circleci`
+          - "5e:7e:b1:3a:b0:65:dc:7c:07:52:fd:dd:a2:87:02:fc"
 
-  - setup_remote_docker:
-      <<: *remote_docker
+    - setup_remote_docker:
+        <<: *remote_docker
 
-  - run:
-      name: Load CI Image
-      command: |
-        docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+    - checkout
 
-  - run:
-      name: Push to Image Repository
-      command: |
-        `print_env ${ENVIRONMENT_NAME}`
-        `print_env ${ENVIRONMENT_APP_NAME}`
-        push_image_to_ecr \
-          --image-name "${CIRCLE_PROJECT_REPONAME}" \
-          --ecr-repo ${AWS_ECR_REPO_URL} \
-          --aws-region ${AWS_ECR_REPO_REGION}
+    - attach_workspace:
+        at: workspace
 
-filter_staging: &filter_staging
-  filters:
-    branches:
-      only:
-      - staging
+    - run:
+        <<: *import_image
 
-filter_production: &filter_production
+    - run:
+        name: Tag the git commit
+        command: |
+          # This fails if the tag already exists
+          # preventing a push to the docker hub.
+          git tag "$(cat VERSION)"
+          git push --tags
+
+    - run:
+        name: Log in to Docker repository
+        command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
+    - run:
+        name: Push the image
+        command: docker push $(./image)
+
+  push_staging:
+    <<: *defaults
+    steps:
+    - add_ssh_keys:
+        fingerprints:
+          # Stored in 1password Team:SETI vault `id_rsa_circleci_circleci`
+          - "5e:7e:b1:3a:b0:65:dc:7c:07:52:fd:dd:a2:87:02:fc"
+
+    - setup_remote_docker:
+        <<: *remote_docker
+
+    - checkout
+
+    - attach_workspace:
+        at: workspace
+
+    - run:
+        <<: *import_image
+
+    - run:
+        name: Log in to Docker repository
+        command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+
+    - run:
+        name: Push the image
+        command: docker push $(./image):staging
+
+master_only: &master_only
   filters:
     branches:
       only:
       - master
 
-jobs:
-  build:
-    <<: *defaults
-    <<: *build_steps
-
-  push_staging:
-    <<: *defaults
-    <<: *push_steps
-
-    environment:
-      ENVIRONMENT_APP_NAME: nginx_sidecar
-      ENVIRONMENT_NAME: staging
-
-  push_production:
-    <<: *defaults
-    <<: *push_steps
-
-    environment:
-      ENVIRONMENT_APP_NAME: nginx_sidecar
-      ENVIRONMENT_NAME: production
+staging_only: &staging_only
+  filters:
+    branches:
+      only:
+      - staging
 
 workflows:
   version: 2
@@ -98,12 +123,12 @@ workflows:
     jobs:
       - build
 
-      - push_staging:
-          <<: *filter_staging
+      - push_master:
+          <<: *master_only
           requires:
           - build
 
-      - push_production:
-          <<: *filter_production
+      - push_staging:
+          <<: *staging_only
           requires:
           - build
