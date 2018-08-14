@@ -30,9 +30,7 @@ services:
       # in your app's Terraform, as this is where Hopper expects to find the bound port.
       web:
         # Pin to a specific image of the nginx-sidecar.
-        # TODO: Staging vs. production??
-        image: 517902663915.dkr.ecr.eu-west-1.amazonaws.com/nginx-sidecar:740797ae4525cceb81625dd70b0035516aaf80ba
-
+        image: deliveroo/nginx-sidecar:0.0.1
         cpu: 128
         memory: 256
         essential: true
@@ -43,6 +41,7 @@ services:
         links:
         - app
 
+        # Port the container is listening on. Should match the definition of the service in Terraform.
         portMappings:
         - containerPort: 3000
 
@@ -57,8 +56,14 @@ services:
   # ...
 ```
 
+## Contributing
+
+The CI for the master branch reads the `VERSION` file and creates a new tag `deliveroo/nginx-sidecar:VERSION` if it doesn't already exist. The `VERSION` should be incremented each time changes are made.
+
+### Staging
+
+This repository has a `staging` branch that pushes to a `deliveroo/nginx-sidecar:staging` tag in Docker Hub, to allow changes to be tested before merging and bumping `VERSION`.
+
 ## Future
 
 This relies on the legacy `--link` flag of Docker/ECS and requires the `bridged` networking mode.
-
-We'll want to switch to another way of doing this once we have different networking modes available - this is an ongoing area of research for Production Engineering.
