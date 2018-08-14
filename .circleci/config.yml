@@ -28,13 +28,13 @@ jobs:
     - run:
         name: Build CI Image
         command: |
-          docker build -f Dockerfile -t "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" .
+          docker build -f Dockerfile -t $(./image) .
 
     - run:
         name: Save CI Image
         command: |
           mkdir -p workspace
-          docker save "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" \
+          docker save $(./image) \
               --output "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
 
     - persist_to_workspace:
@@ -74,12 +74,8 @@ jobs:
         command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
     - run:
-        name: Tag the Docker image
-        command: docker tag  "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" "deliveroo/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}"
-
-    - run:
         name: Push the image
-        command: docker push "deliveroo/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}"
+        command: docker push $(./image)
 
   push_staging:
     <<: *defaults
@@ -106,11 +102,11 @@ jobs:
 
     - run:
         name: Tag the Docker image
-        command: docker tag  "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" "deliveroo/${CIRCLE_PROJECT_REPONAME}:staging"
+        command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
 
     - run:
         name: Push the image
-        command: docker push "deliveroo/${CIRCLE_PROJECT_REPONAME}:staging"
+        command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
 
 master_only: &master_only
   filters:
