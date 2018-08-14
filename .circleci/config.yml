@@ -75,7 +75,7 @@ jobs:
 
     - run:
         name: Push the image
-        command: docker push $(./image)
+        command: docker push "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}"
 
   push_staging:
     <<: *defaults
@@ -101,8 +101,12 @@ jobs:
         command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
 
     - run:
+        name: Tag the Docker image as 'staging'
+        command: docker tag  "${CIRCLE_PROJECT_REPONAME}:${CIRCLE_SHA1}" "${CIRCLE_PROJECT_REPONAME}:staging"
+
+    - run:
         name: Push the image
-        command: docker push $(./image):staging
+        command: docker push "${CIRCLE_PROJECT_REPONAME}:staging"
 
 master_only: &master_only
   filters:
