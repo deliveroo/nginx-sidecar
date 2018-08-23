@@ -85,6 +85,10 @@ http {
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
       proxy_set_header X-Real-IP $remote_addr;
 
+      # Pass the original host name through, this is important if downstream
+      # uses host based routing
+      proxy_set_header Host $host;
+
       proxy_redirect off; # disable nginx redirect-rewrite logic
       proxy_pass http://app:<APP_PORT>;
     }
