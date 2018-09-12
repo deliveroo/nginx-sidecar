@@ -70,6 +70,11 @@ http {
   #
   underscores_in_headers on;
 
+  map $http_x_forwarded_proto $thescheme {
+      default $scheme;
+      https https;
+  }
+
   server {
     listen <NGINX_PORT> deferred;
 
@@ -83,6 +88,7 @@ http {
       proxy_set_header X-Queue-Start "t=${msec}";
 
       proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Forwarded-Proto $thescheme;
       proxy_set_header X-Real-IP $remote_addr;
 
       # Pass the original host name through, this is important if downstream
