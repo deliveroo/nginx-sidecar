@@ -78,6 +78,7 @@ http {
   server {
     listen <NGINX_PORT> deferred;
 
+    client_body_buffer_size <CLIENT_BODY_BUFFER_SIZE>;
     client_max_body_size 5M; # default 1M
 
     location / {
