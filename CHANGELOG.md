@@ -1,5 +1,9 @@
 # `nginx-sidecar` changelog
 
+## 0.3.2
+
+- Use `$request_method` and `$request_uri` instead of the combined `$request`.
+
 ## 0.3.1
 
 - Log `$request_time`; request processing time in seconds (millisecond resolution).
