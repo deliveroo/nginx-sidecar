@@ -1,5 +1,10 @@
 # `nginx-sidecar` changelog
 
+## 0.3.1
+
+- Log `$request_time`; request processing time in seconds (millisecond resolution).
+- Stop logging unusable information, e.g. private remote IPs, proxy path information.
+
 ## 0.3.0
 
 - Allow `client_body_buffer_size` to be overridden.
