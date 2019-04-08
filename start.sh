@@ -12,7 +12,7 @@ set -ex
 
 # Wait for the application to start before accepting ALB requests.
 while sleep 2; do
-  curl --max-time 5 http://app:${APP_PORT}${HEALTHCHECK_PATH:-/health} && break
+  curl --verbose --fail --max-time 5 http://app:${APP_PORT}${HEALTHCHECK_PATH:-/health} && break
 done
 
 # run in foreground as pid 1
