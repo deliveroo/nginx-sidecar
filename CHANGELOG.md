@@ -1,5 +1,12 @@
 # `nginx-sidecar` changelog
 
+## 0.3.3
+
+- Add `--fail` to the curl health check. This causes curl to return non-zero exit codes
+  even if the http request completes but the response code represents an error.
+- Add `--verbose` to the curl health check. This helps us debug any application responses
+  if the server does start, but with errors.
+
 ## 0.3.2
 
 - Use `$request_method` and `$request_uri` instead of the combined `$request`.
