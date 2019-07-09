@@ -1,5 +1,9 @@
 # `nginx-sidecar` changelog
 
+## 0.3.4
+
+- Add `$upstream_status` to the nginx access log line
+
 ## 0.3.3
 
 - Add `--fail` to the curl health check. This causes curl to return non-zero exit codes
