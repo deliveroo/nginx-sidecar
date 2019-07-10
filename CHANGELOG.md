@@ -1,5 +1,9 @@
 # `nginx-sidecar` changelog
 
+## 0.3.5
+
+- Increase the size of the buffer that stores the response headers to 8K.
+
 ## 0.3.4
 
 - Add `$upstream_status` to the nginx access log line
