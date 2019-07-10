@@ -98,6 +98,9 @@ http {
 
       proxy_redirect off; # disable nginx redirect-rewrite logic
       proxy_pass http://app:<APP_PORT>;
+
+      # The size of the buffer that stores the response headers
+      proxy_buffer_size 8k;
     }
   }
 }
