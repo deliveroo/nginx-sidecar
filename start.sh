@@ -6,13 +6,14 @@ set -ex
 # so we substitute at run time
 /bin/sed \
   -e "s/<NGINX_PORT>/${NGINX_PORT}/g" \
+  -e "s/<APP_HOST>/${APP_HOST:-app}/g" \
   -e "s/<APP_PORT>/${APP_PORT}/g" \
   -e "s/<CLIENT_BODY_BUFFER_SIZE>/${CLIENT_BODY_BUFFER_SIZE:-8k}/g" \
   /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Wait for the application to start before accepting ALB requests.
 while sleep 2; do
-  curl --verbose --fail --max-time 5 http://app:${APP_PORT}${HEALTHCHECK_PATH:-/health} && break
+  curl --verbose --fail --max-time 5 "http://${APP_HOST:-app}:${APP_PORT}${HEALTHCHECK_PATH:-/health}" && break
 done
 
 # run in foreground as pid 1
