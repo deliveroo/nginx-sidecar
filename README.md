@@ -50,6 +50,8 @@ services:
         environment:
         - name: NGINX_PORT
           value: '3000'
+        - name: APP_HOST
+          value: 'app'
         - name: APP_PORT
           value: '3001'
 

@@ -1,5 +1,9 @@
 # `nginx-sidecar` changelog
 
+## 0.3.6
+
+- Allow specifying the app hostname to proxy to.
+
 ## 0.3.5
 
 - Increase the size of the buffer that stores the response headers to 8K.
