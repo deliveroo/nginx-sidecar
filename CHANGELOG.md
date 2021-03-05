@@ -1,5 +1,9 @@
 # `nginx-sidecar` changelog
 
+## 0.3.7
+
+- Enabling ngnix status for detailed monitoring
+
 ## 0.3.6
 
 - Allow specifying the app hostname to proxy to.
