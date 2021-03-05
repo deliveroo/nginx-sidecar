@@ -97,10 +97,27 @@ http {
       proxy_set_header Host $host;
 
       proxy_redirect off; # disable nginx redirect-rewrite logic
-      proxy_pass http://app:<APP_PORT>;
+      proxy_pass http://<APP_HOST>:<APP_PORT>;
 
       # The size of the buffer that stores the response headers
       proxy_buffer_size 8k;
+    }
+  }
+
+  server {
+    listen 81;
+    server_name localhost;
+
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+
+    location /nginx_status {
+      # freely available with open source NGINX
+      stub_status;
+
+      # ensures the version information can be retrieved
+      server_tokens on;
     }
   }
 }
