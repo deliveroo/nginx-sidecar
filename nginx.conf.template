@@ -103,4 +103,21 @@ http {
       proxy_buffer_size 8k;
     }
   }
+
+  server {
+    listen 81;
+    server_name localhost;
+
+    access_log off;
+    allow 127.0.0.1;
+    deny all;
+
+    location /nginx_status {
+      # freely available with open source NGINX
+      stub_status;
+
+      # ensures the version information can be retrieved
+      server_tokens on;
+    }
+  }
 }
