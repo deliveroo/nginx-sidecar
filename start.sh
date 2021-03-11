@@ -5,6 +5,8 @@ set -ex
 # nginx.conf doesn't support environment variables,
 # so we substitute at run time
 /bin/sed \
+  -e "s/<NGINX_STATUS_PORT>/${NGINX_STATUS_PORT:-81}/g" \
+  -e "s:<NGINX_STATUS_ALLOW_FROM>:${NGINX_STATUS_ALLOW_FROM:-all}:g" \
   -e "s/<NGINX_PORT>/${NGINX_PORT}/g" \
   -e "s/<APP_HOST>/${APP_HOST:-app}/g" \
   -e "s/<APP_PORT>/${APP_PORT}/g" \
