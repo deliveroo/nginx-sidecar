@@ -2,7 +2,10 @@
 
 ## 0.3.7
 
-- Enabling ngnix status for detailed monitoring
+- Enabling ngnix status for detailed monitoring.
+- New variables are:
+ - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+ - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, allow or none for the nginx config's `allow` statement
 
 ## 0.3.6
 
