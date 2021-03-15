@@ -1,5 +1,12 @@
 # `nginx-sidecar` changelog
 
+## 0.3.7
+
+- Enabling ngnix status for detailed monitoring.
+- New variables are:
+ - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+ - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+
 ## 0.3.6
 
 - Allow specifying the app hostname to proxy to.

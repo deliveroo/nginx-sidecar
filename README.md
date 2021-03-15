@@ -8,6 +8,12 @@ A simple nginx reverse proxy side-car, which can be placed in front an applicati
  - The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
  - The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
 
+## Stats Monitoring
+
+We've enabled `http_stub_status_module` access to help with monitoring integration. By default it is listening on port _81_ with `allow all` as restriction. You can customize this with:
+- `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+
 ## Example
 
 In your `.hopper/config.yml`:
@@ -54,6 +60,18 @@ services:
           value: 'app'
         - name: APP_PORT
           value: '3001'
+        # If you want to customize monitoring status endpoint
+        - name: NGINX_PORT
+          value: '18081'
+        - name: NGINX_STATUS_ALLOW_FROM
+          value: '172.0.0.0/8'
+        
+        # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels
+        # in order to expose them
+        dockerLabels:
+          com.datadoghq.ad.check_names: '["nginx"]'
+          com.datadoghq.ad.init_configs: '[{}]'
+          com.datadoghq.ad.instances: '[{"nginx_status_url": "http://%%host%%:81/nginx_status/"}]'
 
   # ...
 ```
