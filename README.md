@@ -12,7 +12,7 @@ A simple nginx reverse proxy side-car, which can be placed in front an applicati
 
 We've enabled `http_stub_status_module` access to help with monitoring integration. By default it is listening on port _81_ with `allow all` as restriction. You can customize this with:
 - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
-- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` or `none` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
 ## Example
 
