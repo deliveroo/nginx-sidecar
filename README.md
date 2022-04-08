@@ -1,12 +1,13 @@
 # nginx-sidecar
 
-A simple nginx reverse proxy side-car, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
+A simple nginx reverse proxy sidecar, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
 
 ## Requirements
 
- - The application must be linked (either by Docker `--link` or ECS `links` section) as `app`.
- - The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
- - The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
+- The application must be linked (either by Docker `--link` or ECS `links` section) as `app`.
+- The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
+- The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
+
 
 ## Stats Monitoring
 
@@ -14,9 +15,37 @@ We've enabled `http_stub_status_module` access to help with monitoring integrati
 - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
 - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
+## Example with Docker Compose
+
+You can run `docker compose up` locally over the following example:
+
+```yaml
+version: "3.9"
+services:
+  app:
+    container_name: "foo-app"
+    build:
+      context: .
+    # No Port is exposed in the main app
+
+sidecar:
+    container_name: "foo-sidecar"
+    image: "deliveroo/nginx-sidecar:0.3.7"
+    ports:
+      - "8001:8001"
+    links:
+      - app
+    depends_on:
+      - app
+    environment:
+      - NGINX_PORT=8001
+      - APP_PORT=8000
+      - APP_HOST=app
+```
+
 ## Example
 
-In your `.hopper/config.yml`:
+[AWS documentation](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) shows this also working when deploying your application into `AWS Elastic Container Service ( ECS )`:
 
 ```yaml
 # ...
@@ -31,12 +60,11 @@ services:
         essential: true
         command: "exec puma -p 3001 -C config/puma.rb"
 
-      # A separate `containerDefinition` should be added for the nginx side-car.
-      # The side-car doesn't care what this is called, but it'll need to match the `process_name`
-      # in your app's Terraform, as this is where Hopper expects to find the bound port.
+      # A separate `containerDefinition` should be added for the nginx sidecar.
+      # The sidecar doesn't care what this is called, but it'll need to match the `process_name` in your app's Terraform, as this is where Hopper expects to find the bound port.
       web:
         # Pin to a specific image of the nginx-sidecar.
-        image: deliveroo/nginx-sidecar:0.0.1
+        image: deliveroo/nginx-sidecar:0.3.7
         cpu: 128
         memory: 256
         essential: true
