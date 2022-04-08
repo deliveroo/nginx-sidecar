@@ -15,9 +15,9 @@ We've enabled `http_stub_status_module` access to help with monitoring integrati
 - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
 - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
-## Example with Docker Compose
+## Local debugging
 
-You can run `docker compose up` locally over the following example:
+To check the connection between your app and the nginx reverse proxy sidecar, `docker compose up`:
 
 ```yaml
 version: "3.9"
@@ -26,7 +26,7 @@ services:
     container_name: "foo-app"
     build:
       context: .
-    # No Port is exposed in the main app
+    # No Port exposed in the main app
 
 sidecar:
     container_name: "foo-sidecar"
