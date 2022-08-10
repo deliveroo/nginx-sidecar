@@ -1,11 +1,16 @@
 # `nginx-sidecar` changelog
 
+## 0.3.8
+
+- Enabling the support of custom timeout for proxy requests
+- New variable is: PROXY_TIMEOUT- it sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+
 ## 0.3.7
 
 - Enabling ngnix status for detailed monitoring.
 - New variables are:
  - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
- - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` or `none` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+ - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
 ## 0.3.6
 
