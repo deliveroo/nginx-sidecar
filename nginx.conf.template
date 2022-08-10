@@ -64,6 +64,12 @@ http {
              application/javascript application/json
              application/atom+xml;
 
+  # timeout settings when proxying request to a server upstream
+  # nginx default values for these can be high for your app needs so it is configurable
+  proxy_connect_timeout <PROXY_TIMEOUT>;
+  proxy_send_timeout <PROXY_TIMEOUT>;
+  proxy_read_timeout <PROXY_TIMEOUT>;
+
   # According to the HTTP standard, headers with underscores are perfectly valid.
   # However, nginx defaults to dropping headers containing underscores, as they
   # might introduce ambiguities when mapping headers to CGI variables.

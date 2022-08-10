@@ -14,6 +14,9 @@ We've enabled `http_stub_status_module` access to help with monitoring integrati
 - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
 - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
+## Optional Requirements
+ - PROXY_TIMEOUT sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+
 ## Example
 
 In your `.hopper/config.yml`:
@@ -65,6 +68,9 @@ services:
           value: '18081'
         - name: NGINX_STATUS_ALLOW_FROM
           value: '172.0.0.0/8'
+        # If you want a custom timeout for the request
+        - name: PROXY_TIMEOUT
+          value: '10s'
         
         # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels
         # in order to expose them
