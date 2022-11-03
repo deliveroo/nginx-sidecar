@@ -1,16 +1,26 @@
-# `nginx-sidecar` changelog
+# `nginx-sidecar` changelog
+
+## 0.4.0
+
+- Enabling the support of caching and websockets
+- Some variables were renamed, see `entrypoint.sh`
+- New variables are:
+  - `NGINX_CLIENT_BODY_BUFFER_SIZE` - it sets client_body_buffer_size (default: 8k).
+  - `NGINX_CLIENT_MAX_BODY_SIZE` - it sets client_max_body_size (default: 5M).
+  - `APP_SCHEME` - it sets application scheme (default: http).
+  - `NGINX_PROXY_BUFFER_SIZE` - it sets proxy_buffer_size (default: 8k).
 
 ## 0.3.8
 
 - Enabling the support of custom timeout for proxy requests
-- New variable is: PROXY_TIMEOUT- it sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+- New variable is: `PROXY_TIMEOUT` - it sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
 
 ## 0.3.7
 
 - Enabling ngnix status for detailed monitoring.
 - New variables are:
- - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
- - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+  - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+  - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
 ## 0.3.6
 

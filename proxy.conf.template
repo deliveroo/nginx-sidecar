@@ -1,0 +1,35 @@
+proxy_pass_request_headers  on;
+
+# For NewRelic, time in milliseconds
+proxy_set_header            X-Request-Start   "t=${msec}";
+proxy_set_header            X-Queue-Start     "t=${msec}";
+
+proxy_set_header            X-Forwarded-For   $proxy_add_x_forwarded_for;
+proxy_set_header            X-Forwarded-Proto $thescheme;
+proxy_set_header            X-Real-IP         $remote_addr;
+proxy_set_header            X-Forwarded-Host  $http_host;
+
+# Pass the original host name through, this is important if downstream
+# uses host based routing
+proxy_set_header            Host              $host;
+
+proxy_redirect              off; # disable nginx redirect-rewrite logic
+proxy_pass                  <APP_SCHEME>://<APP_HOST>:<APP_PORT>; # default http://app:8080
+
+# The size of the buffer that stores the response headers
+proxy_buffer_size           <NGINX_PROXY_BUFFER_SIZE>;
+
+# Websocket support
+proxy_set_header            Upgrade           $http_upgrade;
+proxy_set_header            Connection        "upgrade";
+
+proxy_http_version          1.1;
+
+# Cache support
+proxy_cache_bypass          $http_upgrade;
+
+# timeout settings when proxying request to a server upstream
+# nginx default values for these can be high for your app needs so it is configurable
+proxy_connect_timeout       <NGINX_PROXY_TIMEOUT>;
+proxy_send_timeout          <NGINX_PROXY_TIMEOUT>;
+proxy_read_timeout          <NGINX_PROXY_TIMEOUT>;

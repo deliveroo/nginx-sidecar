@@ -4,9 +4,9 @@ A simple nginx reverse proxy side-car, which can be placed in front an applicati
 
 ## Requirements
 
- - The application must be linked (either by Docker `--link` or ECS `links` section) as `app`.
- - The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
- - The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
+ - The application must be linked (either by Docker `--link` or ECS `links` section) as `app` either the `APP_HOST` environment variable must be set to the service name.
+ - The `NGINX_PORT` (default `80`) environment variable should be set to the port nginx should bind to.
+ - The `APP_PORT` (default `8080`) environment variable should be set to the port that the application is bound to inside the `app` container.
 
 ## Stats Monitoring
 
@@ -15,7 +15,7 @@ We've enabled `http_stub_status_module` access to help with monitoring integrati
 - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
 
 ## Optional Requirements
- - PROXY_TIMEOUT sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+ - NGINX_PROXY_TIMEOUT sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
 
 ## Example
 
@@ -69,7 +69,7 @@ services:
         - name: NGINX_STATUS_ALLOW_FROM
           value: '172.0.0.0/8'
         # If you want a custom timeout for the request
-        - name: PROXY_TIMEOUT
+        - name: NGINX_PROXY_TIMEOUT
           value: '10s'
         
         # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels

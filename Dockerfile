@@ -1,9 +1,18 @@
 FROM nginx:stable
 
-RUN apt update && apt install -y curl
+# # Install dependencies
+# ARG DEPENDENCIES="curl"
+# RUN apt-get update -y && \
+#     apt-get install --no-install-recommends -y ${DEPENDENCIES} && \
+#     apt-get clean && \
+#     rm -rf /var/cache/apt/archives/* && \
+#     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+#     truncate -s 0 /var/log/*log
 
-COPY nginx.conf.template /etc/nginx/nginx.conf.template
-COPY start.sh /usr/bin/start.sh
-RUN chmod a+x /usr/bin/start.sh
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod a+x /entrypoint.sh && \
+    mkdir -p /usr/local/etc/nginx
 
-CMD /usr/bin/start.sh
+COPY *.conf.template /usr/local/etc/nginx/
+
+ENTRYPOINT ["/entrypoint.sh"]
