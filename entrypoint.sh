@@ -25,7 +25,7 @@ set -e
 
 # Wait for the application to start before accepting ALB requests.
 if [[ -z "${SKIP_HEALTHCHECK}" ]]; then
-  curl --verbose --fail --max-time 5 "http://${APP_HOST:-app}:${APP_PORT:-8080}${APP_HEALTHCHECK_PATH:-/health}" || exit 1
+  curl --silent --fail --max-time 5 "http://${APP_HOST:-app}:${APP_PORT:-8080}${APP_HEALTHCHECK_PATH:-/health}" || ( echo "Couldn't contact app"; exit 1 )
 fi
 
 # run in foreground as pid 1
