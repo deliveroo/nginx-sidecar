@@ -1,5 +1,10 @@
 # `nginx-sidecar` changelog
 
+## 0.3.8
+
+- Enabling the support of custom timeout for proxy requests
+- New variable is: PROXY_TIMEOUT- it sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+
 ## 0.3.7
 
 - Enabling ngnix status for detailed monitoring.

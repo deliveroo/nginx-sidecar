@@ -43,6 +43,10 @@ sidecar:
       - APP_HOST=app
 ```
 
+## Optional Requirements
+ - PROXY_TIMEOUT sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+
+
 ## Example
 
 [AWS documentation](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) shows this also working when deploying your application into `AWS Elastic Container Service ( ECS )`:
@@ -93,6 +97,9 @@ services:
           value: '18081'
         - name: NGINX_STATUS_ALLOW_FROM
           value: '172.0.0.0/8'
+        # If you want a custom timeout for the request
+        - name: PROXY_TIMEOUT
+          value: '10s'
         
         # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels
         # in order to expose them

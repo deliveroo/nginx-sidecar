@@ -11,6 +11,7 @@ set -ex
   -e "s/<APP_HOST>/${APP_HOST:-app}/g" \
   -e "s/<APP_PORT>/${APP_PORT}/g" \
   -e "s/<CLIENT_BODY_BUFFER_SIZE>/${CLIENT_BODY_BUFFER_SIZE:-8k}/g" \
+  -e "s:<PROXY_TIMEOUT>:${PROXY_TIMEOUT:-60s}:g" \
   /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Wait for the application to start before accepting ALB requests.
