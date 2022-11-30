@@ -1,4 +1,5 @@
-FROM nginx:stable
+# pinned based image instead of :latest tag.  Simple and cheap way to establish outdated base image.
+FROM nginx:1.23.2
 
 RUN apt update && apt install -y curl
 
