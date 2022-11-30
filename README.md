@@ -1,6 +1,6 @@
 # nginx-sidecar
 
-A simple nginx reverse proxy sidecar, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
+A simple nginx `Reverse Proxy` sidecar, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
 
 ## Requirements
 
@@ -8,12 +8,12 @@ A simple nginx reverse proxy sidecar, which can be placed in front an applicatio
 - The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
 - The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
 
-
 ## Stats Monitoring
 
 We've enabled `http_stub_status_module` access to help with monitoring integration. By default it is listening on port _81_ with `allow all` as restriction. You can customize this with:
+
 - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
-- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>)
 
 ## Local debugging
 
@@ -30,7 +30,7 @@ services:
 
 sidecar:
     container_name: "foo-sidecar"
-    image: "deliveroo/nginx-sidecar:0.3.7"
+    image: "deliveroo/nginx-sidecar:0.3.9"
     ports:
       - "8001:8001"
     links:
@@ -44,12 +44,12 @@ sidecar:
 ```
 
 ## Optional Requirements
- - PROXY_TIMEOUT sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
 
+`PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
 
 ## Example
 
-[AWS documentation](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) shows this also working when deploying your application into `AWS Elastic Container Service ( ECS )`:
+[AWS documentation](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) shows how to deploy this type of sidecare into `AWS Elastic Container Service ( ECS )`:
 
 ```yaml
 # ...
@@ -68,7 +68,7 @@ services:
       # The sidecar doesn't care what this is called, but it'll need to match the `process_name` in your app's Terraform, as this is where Hopper expects to find the bound port.
       web:
         # Pin to a specific image of the nginx-sidecar.
-        image: deliveroo/nginx-sidecar:0.3.7
+        image: deliveroo/nginx-sidecar:0.3.9
         cpu: 128
         memory: 256
         essential: true
