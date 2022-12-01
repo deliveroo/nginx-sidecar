@@ -67,7 +67,7 @@ jobs:
           command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
           name: Add Latest Tag
-          command: docker tag "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+          command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
       - run:
           name: Push Latest and Version image tags
           command: docker push --all-tags "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
