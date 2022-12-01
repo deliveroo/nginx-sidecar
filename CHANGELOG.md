@@ -1,4 +1,8 @@
-# `nginx-sidecar` changelog
+# changelog
+
+## 0.3.9
+
+- Bumpin to `nginx:1.23.2`
 
 ## 0.3.8
 
