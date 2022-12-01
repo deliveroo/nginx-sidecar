@@ -1,4 +1,8 @@
-# changelog
+#  changelog
+
+## 0.3.9a
+
+- Added `:latest` tag
 
 ## 0.3.9
 
@@ -13,8 +17,8 @@
 
 - Enabling ngnix status for detailed monitoring.
 - New variables are:
- - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
- - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+- `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>)
 
 ## 0.3.6
 
