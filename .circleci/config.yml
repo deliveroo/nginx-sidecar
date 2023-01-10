@@ -47,7 +47,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - f8:d2:c8:03:c4:41:99:4f:07:e6:c0:0b:94:70:04:80
+            - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
       - setup_remote_docker:
           <<: *remote_docker
       - checkout
@@ -80,7 +80,7 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - f8:d2:c8:03:c4:41:99:4f:07:e6:c0:0b:94:70:04:80
+            - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
       - setup_remote_docker:
           <<: *remote_docker
       - checkout
