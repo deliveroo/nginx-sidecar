@@ -70,7 +70,11 @@ jobs:
           command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
       - run:
           name: Push Latest and Version image tags
-          command: docker push --all-tags "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+          command: push_image_to_docker_hub \
+            "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:${CIRCLE_TAG}" \
+            "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+
+
   push_staging:
     <<: *defaults
     steps:
@@ -93,6 +97,9 @@ jobs:
       - run:
           name: Push the image
           command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+
+
+
 master_only: &master_only
   filters:
     branches:

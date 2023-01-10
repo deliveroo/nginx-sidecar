@@ -1,12 +1,16 @@
 #  changelog
 
+## 0.3.10
+
+- Bumped to `nginx:1.23.3` and used script inside of deliveroo/circleci to push multiple tags to Docker Hub.
+
 ## 0.3.9a
 
 - Added `:latest` tag
 
 ## 0.3.9
 
-- Bumpin to `nginx:1.23.2`
+- Bumped to `nginx:1.23.2`
 
 ## 0.3.8
 
