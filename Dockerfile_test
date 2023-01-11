@@ -1,0 +1,25 @@
+FROM alpine/curl:3.14
+
+COPY /test/healthcheck.sh ./
+RUN chmod +x healthcheck.sh
+
+###############################################################
+# add non privileged curl and set user
+###############################################################
+RUN addgroup -S curl_group && adduser -S curl_user -G curl_group
+USER curl_user
+###############################################################
+# set environment variables from docker-compose build args
+###############################################################
+ARG APP_HOST
+ARG NGINX_PORT
+ENV APP_HOST ${APP_HOST}
+ENV NGINX_PORT ${NGINX_PORT}
+###############################################################
+# run wait-for sh ( not bash ) script
+###############################################################
+# CMD [ "./wait-for.sh", "-c", "curl --fail http://$APP_HOST:$NGINX_PORT"]
+RUN ./healthcheck.sh
+CMD [""-c", "--fail http://$APP_HOST:$NGINX_PORT", "|| exit 1 "]
+
+# HEALTHCHECK CMD --fail http://$APP_HOST:$NGINX_PORT || exit 1 
