@@ -65,7 +65,7 @@ jobs:
           command: docker compose up -d
       - run:
           name: Check Healthy Sidecar status
-          command: test "$(docker inspect -f {{.State.Health.Status}} nginx-test)"=="healthy" || exit 1
+          command: [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthdy" ] && echo "Healty Container" || exit 1
 
 
   push_master:
