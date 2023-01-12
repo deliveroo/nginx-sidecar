@@ -143,9 +143,11 @@ workflows:
           <<: *master_only
           requires:
             - build
+            - test
           <<: *global_context
       - push_staging:
           <<: *staging_only
           requires:
             - build
+            - test
           <<: *global_context
