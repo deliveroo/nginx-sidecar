@@ -1,0 +1,33 @@
+version: "3.7"
+services:
+  echo-server-test:
+    container_name: "echo-server-test"
+    environment:
+      CI: "true"
+      APP_PORT: $APP_PORT
+    image: hashicorp/http-echo:latest
+    command: -listen=:${APP_PORT} -text="hello world"
+
+  nginx-test:
+    container_name: "nginx-test"
+    environment:
+      NGINX_PORT: $NGINX_PORT
+      APP_PORT: $APP_PORT
+      APP_HOST: $APP_HOST
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - $NGINX_PORT:$NGINX_PORT
+    depends_on:
+      - echo-server-test
+    healthcheck:
+      test: curl --fail http://${APP_HOST}:${APP_PORT}/ || exit 1
+      interval: 1s
+      timeout: 10s
+
+  wait-test:
+    container_name: "wait-test"
+    image: deliveroo/circleci:1.7
+    links:
+      - nginx-test

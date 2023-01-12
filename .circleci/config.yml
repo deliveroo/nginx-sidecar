@@ -1,8 +1,12 @@
 global_context: &global_context
   context:
     - org-global
+
 global_remote_docker: &global_remote_docker
-  version: 19.03.13
+  setup_remote_docker:
+    docker_layer_caching: true
+    version: 20.10.18
+
 global_dockerhub_auth: &global_dockerhub_auth
   auth:
     username: $GLOBAL_DOCKERHUB_USERNAME
@@ -10,12 +14,9 @@ global_dockerhub_auth: &global_dockerhub_auth
 version: 2
 defaults: &defaults
   docker:
-    - image: deliveroo/circleci:1.7.3
+    - image: deliveroo/circleci:1.7
       <<: *global_dockerhub_auth
-remote_docker: &remote_docker
-  docker_layer_caching: true
-  reusable: true
-  <<: *global_remote_docker
+
 import_image: &import_image
   name: Import Docker image
   command: |
@@ -25,8 +26,7 @@ jobs:
   build:
     <<: *defaults
     steps:
-      - setup_remote_docker:
-          <<: *remote_docker
+      - *global_remote_docker
       - checkout
       - run:
           name: Build CI Image
@@ -42,14 +42,40 @@ jobs:
           root: workspace
           paths:
             - "*.tar"
+  test:
+    <<: *defaults
+    environment:
+      NGINX_PORT: 8001
+      APP_PORT: 8000
+      APP_HOST: echo-server-test
+    steps:
+      - *global_remote_docker
+      - checkout
+      - attach_workspace:
+          at: workspace
+      - run:
+          <<: *import_image
+      - run:
+          name: Start Sidecar and Echo Server
+          command: docker-compose --file docker-compose.ci.yml run --rm wait-test wfi nginx-test:8001 --timeout=60
+      - run:
+          name: Echo Sidecar status
+          command: |
+            echo "$(docker inspect -f {{.State.Health.Status}} nginx-test)"
+      - run:
+          name: Check Healthy Sidecar status
+          command: |
+            [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] \
+            && echo "Healty Container" \
+            || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
+
   push_master:
     <<: *defaults
     steps:
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
-      - setup_remote_docker:
-          <<: *remote_docker
+      - *global_remote_docker
       - checkout
       - attach_workspace:
           at: workspace
@@ -62,9 +88,6 @@ jobs:
             # preventing a push to the docker hub.
             git tag "$(cat VERSION)"
             git push --tags
-      - run:
-          name: Log in to Docker repository
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
           name: Add Latest Tag
           command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
@@ -81,16 +104,12 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
-      - setup_remote_docker:
-          <<: *remote_docker
+      - *global_remote_docker
       - checkout
       - attach_workspace:
           at: workspace
       - run:
           <<: *import_image
-      - run:
-          name: Log in to Docker repository
-          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
       - run:
           name: Tag the Docker image
           command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
@@ -116,6 +135,10 @@ workflows:
     jobs:
       - build:
           <<: *global_context
+      - test:
+          <<: *global_context
+          requires:
+            - build
       - push_master:
           <<: *master_only
           requires:
