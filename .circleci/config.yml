@@ -14,7 +14,7 @@ global_dockerhub_auth: &global_dockerhub_auth
 version: 2
 defaults: &defaults
   docker:
-    - image: deliveroo/circleci:1.7.3
+    - image: deliveroo/circleci:1.7
       <<: *global_dockerhub_auth
 
 import_image: &import_image

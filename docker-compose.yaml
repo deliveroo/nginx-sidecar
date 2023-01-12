@@ -25,3 +25,8 @@ services:
       test: curl --fail http://${APP_HOST}:${APP_PORT}/ || exit 1
       interval: 1s
       timeout: 10s
+
+  wait:
+    image: deliveroo/circleci:1.7
+    links:
+      - nginx-test
