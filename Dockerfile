@@ -1,7 +1,7 @@
 # pinned based image instead of :latest tag.  Simple and cheap way to establish outdated base image.
-FROM nginx:1.23.3
+FROM nginx:1.23.3-alpine-slim
 
-RUN apt update && apt install -y curl
+RUN apk --no-cache add curl
 
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
