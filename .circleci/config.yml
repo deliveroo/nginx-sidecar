@@ -64,10 +64,15 @@ jobs:
           name: Start Sidecar and Echo Server
           command: docker compose up -d
       - run:
+          name: Echo Sidecar status
+          command: |
+            echo "$(docker inspect -f {{.State.Health.Status}} nginx-test)"
+      - run:
           name: Check Healthy Sidecar status
           command: |
-            [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] && echo "Healty Container" || exit 1
-
+            [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] \
+            && echo "Healty Container" \
+            || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
 
   push_master:
     <<: *defaults
