@@ -26,7 +26,8 @@ services:
       interval: 1s
       timeout: 10s
 
-  wait:
+  wait-test:
+    container_name: "wait-test"
     image: deliveroo/circleci:1.7
     links:
       - nginx-test
