@@ -1,42 +1,27 @@
 version: "3.7"
 services:
-  # no exposed port via Docker for the echo-server
   echo-server-test:
     container_name: "echo-server-test"
     environment:
       CI: "true"
+      APP_PORT: $APP_PORT
     image: hashicorp/http-echo:latest
-    command: -listen=:8000 -text="hello world"
+    command: -listen=:${APP_PORT} -text="hello world"
 
   nginx-test:
     container_name: "nginx-test"
     environment:
-      - NGINX_PORT=8001
-      - APP_PORT=8000
-      - APP_HOST=echo-server-test
+      NGINX_PORT: $NGINX_PORT
+      APP_PORT: $APP_PORT
+      APP_HOST: $APP_HOST
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - 8001:8001
+      - $NGINX_PORT:$NGINX_PORT
     depends_on:
       - echo-server-test
     healthcheck:
-      test: curl --fail -s http://echo-server-test:8000/ || exit 1
-      interval: 1m30s
+      test: curl --fail http://${APP_HOST}:${APP_PORT}/ || exit 1
+      interval: 1s
       timeout: 10s
-      retries: 3
-    links:
-      - "curl-box-test"
-
-  curl-box-test:
-    container_name: "curl-box-test"
-    build:
-      context: .
-      dockerfile: Dockerfile_test
-      args:
-        NGINX_PORT: 8001
-        APP_PORT: 8000
-        APP_HOST: echo-server-test
-    # depends_on:
-    #   - nginx-test

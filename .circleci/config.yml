@@ -42,6 +42,32 @@ jobs:
           root: workspace
           paths:
             - "*.tar"
+  test:
+    <<: *defaults
+    environment:
+      NGINX_PORT: 8001
+      APP_PORT: 8000
+      APP_HOST: echo-server-test
+    steps:
+      - checkout
+      - setup_remote_docker:
+          <<: *remote_docker
+      - checkout
+      - attach_workspace:
+          at: workspace
+      - run:
+          <<: *import_image
+      - run:
+          name: Log in to Docker repository
+          command: docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+      - run:
+          name: Start Sidecar and Echo Server
+          command: docker compose up
+      - run:
+          name: Check Healthy Sidecar status
+          command: test $(docker inspect -f {{.State.Health.Status}} nginx-test)"=="healthy" || exit 1
+
+
   push_master:
     <<: *defaults
     steps:
@@ -116,6 +142,10 @@ workflows:
     jobs:
       - build:
           <<: *global_context
+      - test:
+          <<: *global_context
+          requires:
+            - build
       - push_master:
           <<: *master_only
           requires:
