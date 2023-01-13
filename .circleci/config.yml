@@ -62,17 +62,13 @@ jobs:
       - run:
           <<: *import_image
       - run:
-          name: Build images of services declared in docker-compose.yml
+          name: Build images declared in docker-compose file
           command: docker-compose --file docker-compose.ci.yml build
       - run:
           name: Start Sidecar and Echo Server
           command: |
             set -x
             docker-compose --file docker-compose.ci.yml run -d wait-test wfi nginx-test:8001 --timeout=60
-      - run:
-          name: Echo Sidecar status
-          command: |
-            echo "$(docker inspect -f {{.State.Health.Status}} nginx-test)"
       - run:
           name: Check Healthy Sidecar status
           command: |
