@@ -2,6 +2,7 @@
 
 ## _
 
+- Added boolean CI/CD Parameter publish_to_docker_hub. Defaults to `false`.
 - Added CI/CD test that documents how to use the Sidecar.
 
 ## 0.3.10

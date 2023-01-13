@@ -63,7 +63,9 @@ jobs:
           <<: *import_image
       - run:
           name: Start Sidecar and Echo Server
-          command: docker-compose --file docker-compose.ci.yml run --rm wait-test wfi nginx-test:8001 --timeout=120
+          command: |
+            set -x
+            docker-compose --file docker-compose.ci.yml up wait-test wfi nginx-test:8001 --timeout=60
       - run:
           name: Echo Sidecar status
           command: |
