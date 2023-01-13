@@ -139,20 +139,18 @@ staging_only: &staging_only
         - staging
 workflows:
 
-  publish_image:
+  publish:
     when: << pipeline.parameters.publish_to_docker_hub >>
     jobs:
-      - test
-
-
-  build_and_push:
-    jobs:
-      - build:
-          <<: *global_context
       - test:
           <<: *global_context
           requires:
             - build
+
+  build_test:
+    jobs:
+      - build:
+          <<: *global_context
       - push_master:
           <<: *master_only
           requires:
