@@ -1,8 +1,11 @@
 #  changelog
 
+## 0.3.11
+
+- Moved to slimmer, Alpine base image to shrink the size of the sidecar.
+
 ## _
 
-- Added boolean CI/CD Parameter publish_to_docker_hub. Defaults to `false`.
 - Added CI/CD test that documents how to use the Sidecar.
 
 ## 0.3.10
