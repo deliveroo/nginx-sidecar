@@ -1,6 +1,6 @@
 # nginx-sidecar
 
-[![CircleCI](https://dl.circleci.com/status-badge/img/gh/deliveroo/nginx-sidecar/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/deliveroo/nginx-sidecar/tree/master)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/deliveroo/nginx-sidecar/tree/master.svg?style=svg&circle-token=01448f7fc138e431d175c0958cbb5f9f90c8872e)](https://dl.circleci.com/status-badge/redirect/gh/deliveroo/nginx-sidecar/tree/master)
 
 A simple nginx `Reverse Proxy` sidecar, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
 
