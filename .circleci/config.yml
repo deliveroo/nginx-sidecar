@@ -57,10 +57,6 @@ jobs:
     steps:
       - *global_remote_docker
       - checkout
-      - attach_workspace:
-          at: workspace
-      - run:
-          <<: *import_image
       - run:
           name: Build images declared in docker-compose file
           command: docker-compose --file docker-compose.ci.yml build
@@ -68,7 +64,7 @@ jobs:
           name: Start Sidecar and Echo Server
           command: |
             set -x
-            docker-compose --file docker-compose.ci.yml run -d wait-test wfi nginx-test:8001 --timeout=60
+            ci run wait-test wfi nginx-test:8001 --timeout=60
       - run:
           name: Check Healthy Sidecar status
           command: |
