@@ -68,7 +68,7 @@ jobs:
           name: Start Sidecar and Echo Server
           command: |
             set -x
-            docker-compose --file docker-compose.ci.yml up -d wait-test wfi nginx-test:8001 --timeout=60
+            docker-compose --file docker-compose.ci.yml run -d wait-test wfi nginx-test:8001 --timeout=60
       - run:
           name: Echo Sidecar status
           command: |
