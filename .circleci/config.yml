@@ -58,13 +58,15 @@ jobs:
       - *global_remote_docker
       - checkout
       - run:
-          name: Build images declared in docker-compose file
-          command: docker-compose --file docker-compose.ci.yml build
-      - run:
-          name: Start Sidecar and Echo Server
+          name: Build all services declared in docker-compose file
           command: |
             set -x
-            ci run wait-test wfi nginx-test:8001 --timeout=60
+            docker-compose -f docker-compose.ci.yml -p nginx-sidecar up --build --no-start
+      - run:
+          name: Start Containers
+          command: |
+            set -x
+            docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
       - run:
           name: Check Healthy Sidecar status
           command: |
