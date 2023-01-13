@@ -49,22 +49,12 @@ jobs:
             - "*.tar"
 
   test:
-    parameters:
-      publish_to_docker_hub:
-        type: boolean
-        default: false
     <<: *defaults
     environment:
       NGINX_PORT: 8001
       APP_PORT: 8000
       APP_HOST: echo-server-test
     steps:
-      - when:
-          condition:
-            equal: [ false, << parameters.publish_to_docker_hub >> ]
-          steps:
-            - run: echo "Stopping as publish_to_docker_hub Parameter set to false"
-            - run: circleci-agent step halt
       - *global_remote_docker
       - checkout
       - attach_workspace:
@@ -86,8 +76,18 @@ jobs:
             || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
 
   push_master:
+    parameters:
+      publish_to_docker_hub:
+        type: boolean
+        default: false
     <<: *defaults
     steps:
+      - when:
+          condition:
+            equal: [ false, << parameters.publish_to_docker_hub >> ]
+          steps:
+            - run: echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
+            - run: circleci-agent step halt
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
@@ -153,11 +153,11 @@ workflows:
           <<: *global_context
       - test:
           <<: *global_context
-          publish_to_docker_hub: false
           requires:
             - build
       - push_master:
           <<: *master_only
+          publish_to_docker_hub: false
           requires:
             - build
           <<: *global_context
