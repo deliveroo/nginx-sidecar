@@ -22,6 +22,12 @@ import_image: &import_image
   command: |
     set -ex
     docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+
+parameters:
+  publish_to_docker_hub:
+    type: boolean
+    default: false
+
 jobs:
   build:
     <<: *defaults
@@ -136,9 +142,11 @@ workflows:
       - build:
           <<: *global_context
       - test:
+          when: << pipeline.parameters.publish_to_docker_hub >>
           <<: *global_context
           requires:
             - build
+
       - push_master:
           <<: *master_only
           requires:
