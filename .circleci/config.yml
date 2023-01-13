@@ -1,3 +1,5 @@
+version: 2.1
+
 global_context: &global_context
   context:
     - org-global
@@ -11,7 +13,7 @@ global_dockerhub_auth: &global_dockerhub_auth
   auth:
     username: $GLOBAL_DOCKERHUB_USERNAME
     password: $GLOBAL_DOCKERHUB_PASSWORD
-version: 2
+
 defaults: &defaults
   docker:
     - image: deliveroo/circleci:1.7
@@ -22,6 +24,9 @@ import_image: &import_image
   command: |
     set -ex
     docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
+
+
+
 jobs:
   build:
     <<: *defaults
@@ -42,6 +47,7 @@ jobs:
           root: workspace
           paths:
             - "*.tar"
+
   test:
     <<: *defaults
     environment:
@@ -57,7 +63,7 @@ jobs:
           <<: *import_image
       - run:
           name: Start Sidecar and Echo Server
-          command: docker-compose --file docker-compose.ci.yml run --rm wait-test wfi nginx-test:8001 --timeout=60
+          command: docker-compose --file docker-compose.ci.yml run --rm wait-test wfi nginx-test:8001 --timeout=120
       - run:
           name: Echo Sidecar status
           command: |
@@ -70,8 +76,18 @@ jobs:
             || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
 
   push_master:
+    parameters:
+      publish_to_docker_hub:
+        type: boolean
+        default: false
     <<: *defaults
     steps:
+      - when:
+          condition:
+            equal: [ false, << parameters.publish_to_docker_hub >> ]
+          steps:
+            - run: echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
+            - run: circleci-agent step halt
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
@@ -130,8 +146,8 @@ staging_only: &staging_only
       only:
         - staging
 workflows:
-  version: 2
-  build_and_push:
+
+  build_test_publish:
     jobs:
       - build:
           <<: *global_context
@@ -141,6 +157,7 @@ workflows:
             - build
       - push_master:
           <<: *master_only
+          publish_to_docker_hub: false
           requires:
             - build
             - test
