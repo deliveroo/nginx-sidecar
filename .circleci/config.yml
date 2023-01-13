@@ -57,17 +57,16 @@ jobs:
     steps:
       - *global_remote_docker
       - checkout
-      - attach_workspace:
-          at: workspace
       - run:
-          <<: *import_image
-      - run:
-          name: Start Sidecar and Echo Server
-          command: docker-compose --file docker-compose.ci.yml run --rm wait-test wfi nginx-test:8001 --timeout=120
-      - run:
-          name: Echo Sidecar status
+          name: Build all services declared in docker-compose file
           command: |
-            echo "$(docker inspect -f {{.State.Health.Status}} nginx-test)"
+            set -x
+            docker-compose -f docker-compose.ci.yml -p nginx-sidecar up --build --no-start
+      - run:
+          name: Start Containers
+          command: |
+            set -x
+            docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
       - run:
           name: Check Healthy Sidecar status
           command: |
