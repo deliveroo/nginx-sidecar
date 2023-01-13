@@ -28,7 +28,7 @@ import_image: &import_image
 parameters:
   publish_to_docker_hub:
     type: boolean
-    default: false
+    default: true
 
 jobs:
   build:
