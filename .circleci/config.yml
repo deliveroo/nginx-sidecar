@@ -25,10 +25,7 @@ import_image: &import_image
     set -ex
     docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
 
-parameters:
-  publish_to_docker_hub:
-    type: boolean
-    default: true
+
 
 jobs:
   build:
@@ -50,13 +47,24 @@ jobs:
           root: workspace
           paths:
             - "*.tar"
+
   test:
+    parameters:
+      publish_to_docker_hub:
+        type: boolean
+        default: false
     <<: *defaults
     environment:
       NGINX_PORT: 8001
       APP_PORT: 8000
       APP_HOST: echo-server-test
     steps:
+      - when:
+          condition:
+            equal: [ false, << parameters.publish_to_docker_hub >> ]
+          steps:
+            - run: echo "Stopping as publish_to_docker_hub Parameter set to false"
+            - run: exit 0
       - *global_remote_docker
       - checkout
       - attach_workspace:
@@ -139,18 +147,15 @@ staging_only: &staging_only
         - staging
 workflows:
 
-  publish:
-    when: << pipeline.parameters.publish_to_docker_hub >>
-    jobs:
-      - test:
-          <<: *global_context
-          requires:
-            - build
-
-  build_test:
+  build_test_publish:
     jobs:
       - build:
           <<: *global_context
+      - test:
+          <<: *global_context
+          publish_to_docker_hub: false
+          requires:
+            - build
       - push_master:
           <<: *master_only
           requires:
