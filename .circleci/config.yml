@@ -1,3 +1,5 @@
+version: 2.1
+
 global_context: &global_context
   context:
     - org-global
@@ -11,7 +13,7 @@ global_dockerhub_auth: &global_dockerhub_auth
   auth:
     username: $GLOBAL_DOCKERHUB_USERNAME
     password: $GLOBAL_DOCKERHUB_PASSWORD
-version: 2
+
 defaults: &defaults
   docker:
     - image: deliveroo/circleci:1.7
@@ -136,17 +138,21 @@ staging_only: &staging_only
       only:
         - staging
 workflows:
-  version: 2
+
+  publish_image:
+    when: << pipeline.parameters.publish_to_docker_hub >>
+    jobs:
+      - test
+
+
   build_and_push:
     jobs:
       - build:
           <<: *global_context
       - test:
-          when: << pipeline.parameters.publish_to_docker_hub >>
           <<: *global_context
           requires:
             - build
-
       - push_master:
           <<: *master_only
           requires:
