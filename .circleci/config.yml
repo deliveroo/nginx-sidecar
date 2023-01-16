@@ -58,7 +58,7 @@ jobs:
       - *global_remote_docker
       - checkout
       - run:
-          name: Build all services declared in docker-compose file
+          name: Build services declared in docker-compose file
           command: |
             set -x
             docker-compose -f docker-compose.ci.yml -p nginx-sidecar up --build --no-start
