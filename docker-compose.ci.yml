@@ -8,6 +8,8 @@ services:
     command: -listen=:${APP_PORT} -text="hello world"
 
   nginx-test:
+    # name required for Healthy Container CI/CD check
+    container_name: "nginx-test"
     environment:
       NGINX_PORT: $NGINX_PORT
       APP_PORT: $APP_PORT
@@ -28,4 +30,3 @@ services:
     image: deliveroo/circleci:1.7
     links:
       - nginx-test
-
