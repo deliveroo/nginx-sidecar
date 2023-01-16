@@ -6,6 +6,7 @@
 
 ## _
 
+- Added boolean `publish_to_docker_hub` parameter for CirleCI. Defaults to `false`.
 - Added CI/CD test that documents how to use the Sidecar.
 
 ## 0.3.10
