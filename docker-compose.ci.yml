@@ -1,7 +1,6 @@
 version: "3.7"
 services:
   echo-server-test:
-    container_name: "echo-server-test"
     environment:
       CI: "true"
       APP_PORT: $APP_PORT
@@ -9,7 +8,6 @@ services:
     command: -listen=:${APP_PORT} -text="hello world"
 
   nginx-test:
-    container_name: "nginx-test"
     environment:
       NGINX_PORT: $NGINX_PORT
       APP_PORT: $APP_PORT
@@ -27,7 +25,7 @@ services:
       timeout: 10s
 
   wait-test:
-    container_name: "wait-test"
     image: deliveroo/circleci:1.7
     links:
       - nginx-test
+
