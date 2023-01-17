@@ -7,10 +7,22 @@ COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
 RUN chmod a+x /usr/bin/start.sh
 
-###############################################################
-# add non privileged curl user
-###############################################################
-RUN addgroup -S curl_group && adduser -S curl_user -G curl_group
-USER curl_user
+RUN chown -R nginx:nginx /etc/nginx/nginx.conf.template && \
+    chown -R nginx:nginx /usr/bin/start.sh && \
+    chown -R nginx:nginx /var/cache/nginx && \
+    chown -R nginx:nginx /var/log/nginx && \
+    chown -R nginx:nginx /etc/nginx/conf.d
+
+RUN touch /etc/nginx/nginx.conf && \
+    chown -R nginx:nginx /etc/nginx/nginx.conf
+
+RUN touch /var/run/nginx.pid && \
+    chown -R nginx:nginx /var/run/nginx.pid
+
+#############################################################################
+# Set non-root user. nginx user and group already pre-created in base image #
+#############################################################################
+
+USER nginx
 
 CMD /usr/bin/start.sh
