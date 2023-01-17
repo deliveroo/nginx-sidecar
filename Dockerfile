@@ -7,4 +7,10 @@ COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
 RUN chmod a+x /usr/bin/start.sh
 
+###############################################################
+# add non privileged curl user
+###############################################################
+RUN addgroup -S curl_group && adduser -S curl_user -G curl_group
+USER curl_user
+
 CMD /usr/bin/start.sh
