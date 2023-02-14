@@ -58,10 +58,14 @@ jobs:
       - *global_remote_docker
       - checkout
       - run:
-          name: Build services declared in docker-compose file
+          name: Build all services in docker-compose file. Exit on error.
           command: |
             set -x
-            docker-compose -f docker-compose.ci.yml -p nginx-sidecar up --build --no-start
+            docker-compose \
+              -f docker-compose.ci.yml \
+              -p nginx-sidecar up \
+              --build \
+              --abort-on-container-exit
       - run:
           name: Start Containers
           command: |
@@ -85,7 +89,10 @@ jobs:
           condition:
             equal: [ false, << parameters.publish_to_docker_hub >> ]
           steps:
-            - run: echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
+            - run: 
+              name: Not publishing to Docker Hub
+              command: |
+                echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
             - run: circleci-agent step halt
       - add_ssh_keys:
           fingerprints:

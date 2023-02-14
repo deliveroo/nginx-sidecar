@@ -23,10 +23,22 @@ services:
       - echo-server-test
     healthcheck:
       test: curl --fail http://${APP_HOST}:${APP_PORT}/ || exit 1
-      interval: 1s
+      interval: 3s
       timeout: 10s
 
   wait-test:
     image: deliveroo/circleci:1.7
     links:
       - nginx-test
+
+  curl-box-test:
+    container_name: "curl-box-test"
+    environment:
+      NGINX_PORT: $NGINX_PORT
+      APP_HOST: $APP_HOST
+    image: curlimages/curl:7.87.0
+    healthcheck:
+      test:  v || exit 1
+      interval: 1s
+      timeout: 10s
+    entrypoint: [ "curl", --fail, "https://google.com", " || ", "exit 1" ]
