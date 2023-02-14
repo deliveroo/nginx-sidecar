@@ -90,9 +90,9 @@ jobs:
             equal: [ false, << parameters.publish_to_docker_hub >> ]
           steps:
             - run: 
-              name: Not publishing to Docker Hub
+              name: Publish to Docker Hub decision
               command: |
-                echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
+                echo "Not publishing to Docker Hub or incrementing the GitHub tags.\n\nSet the publish_to_docker_hub value to \"true\" if you want to publish."
             - run: circleci-agent step halt
       - add_ssh_keys:
           fingerprints:
