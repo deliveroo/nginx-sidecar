@@ -1,9 +1,25 @@
-# `nginx-sidecar` changelog
+#  changelog
+
+## 0.3.11
+
+- Moved to slimmer, Alpine base image to shrink the size of the sidecar.
+
+## _
+
+- Added boolean `publish_to_docker_hub` parameter for CirleCI. Defaults to `false`.
+- Added CI/CD test that documents how to use the Sidecar.
+
+## 0.3.10
+
+- Bumped to `nginx:1.23.3` and used script inside of deliveroo/circleci to push multiple tags to Docker Hub.
+
+## 0.3.9a
+
+- Added `:latest` tag
 
 ## 0.3.9
 
-- Bumpin to `nginx:1.23.2`
-- New variable is: PROXY_TIMEOUT- it sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+- Bumped to `nginx:1.23.2`
 
 ## 0.3.8
 
@@ -14,8 +30,8 @@
 
 - Enabling ngnix status for detailed monitoring.
 - New variables are:
- - `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
- - `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (http://nginx.org/en/docs/http/ngx_http_access_module.html)
+- `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
+- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>)
 
 ## 0.3.6
 
