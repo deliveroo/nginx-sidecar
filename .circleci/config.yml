@@ -54,6 +54,7 @@ jobs:
       NGINX_PORT: 8001
       APP_PORT: 8000
       APP_HOST: echo-server-test
+      NGINX_TEST_SERVICE: nginx-test
     steps:
       - *global_remote_docker
       - checkout
@@ -77,7 +78,7 @@ jobs:
           command: |
             [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] \
             && echo "Healty Container" \
-            || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
+            || { echo "Failed. ${NGINX_TEST_SERVICE} state:$(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"; exit 1; }
       - run:
           name: Smoke test Nginx Sidecar can proxy pass request
           command: |
