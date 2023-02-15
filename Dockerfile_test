@@ -1,8 +1,0 @@
-###############################################################
-# non privileged curl_user already set in base image
-###############################################################
-
-
-
-# goal: run Healthcheck that should pass
-# send a curl to app host that should fail

@@ -64,19 +64,22 @@ jobs:
             docker-compose \
               -f docker-compose.ci.yml \
               -p nginx-sidecar up \
-              --build \
-              --abort-on-container-exit
+              --build
       - run:
-          name: Start Containers
+          name: Check Nginx Sidecar container can start and send requests
           command: |
             set -x
             docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
       - run:
-          name: Check Healthy Sidecar status
+          name: Check Nginx Sidecar status is healthy
           command: |
             [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] \
             && echo "Healty Container" \
             || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
+      - run:
+          name: Smoke test
+          command: |
+            docker compose -f docker-compose.ci.yml up curl-box-test
 
   push_master:
     parameters:

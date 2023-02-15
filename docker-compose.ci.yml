@@ -31,11 +31,12 @@ services:
     links:
       - nginx-test
 
+  # defaulted to "off" based on profile set
   curl-box-test:
     container_name: "curl-box-test"
+    profiles: [ 'smoke-test' ]
     environment:
       NGINX_PORT: $NGINX_PORT
-    depends_on:
-      - nginx-test
+      APP_HOST: $APP_HOST
     image: curlimages/curl:7.87.0
     command: --fail http://nginx-test:${NGINX_PORT}/ || exit 1
