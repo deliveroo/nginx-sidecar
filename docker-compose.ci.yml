@@ -35,10 +35,7 @@ services:
     container_name: "curl-box-test"
     environment:
       NGINX_PORT: $NGINX_PORT
-      APP_HOST: $APP_HOST
+    depends_on:
+      - nginx-test
     image: curlimages/curl:7.87.0
-    healthcheck:
-      test:  v || exit 1
-      interval: 1s
-      timeout: 10s
-    entrypoint: [ "curl", --fail, "https://google.com", " || ", "exit 1" ]
+    command: --fail http://nginx-test:${NGINX_PORT}/ || exit 1
