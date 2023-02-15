@@ -66,7 +66,7 @@ jobs:
               -f docker-compose.ci.yml \
               -p nginx-sidecar up \
               --build \
-              d
+              -d
       - run:
           name: Check Nginx Sidecar container can start and send requests
           command: |
