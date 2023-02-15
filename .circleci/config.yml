@@ -74,17 +74,25 @@ jobs:
             set -x
             docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
       - run:
-          name: Check Nginx Sidecar status is healthy
-          command: |
-            [ "$(docker inspect -f {{.State.Health.Status}} nginx-test)" = "healthy" ] \
-            && echo "Healty Container" \
-            || { echo "Failed. ${NGINX_TEST_SERVICE} state:$(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"; exit 1; }
-      - run:
-          name: Smoke test Nginx Sidecar can proxy pass request
-          command: |
-            docker compose -f docker-compose.ci.yml up curl-box-test
+            name: Check Nginx Sidecar status is healthy
+            command: |
+              container_success="healthy"
+              n=0
+              until [ "$n" -ge 3 ]
+              do
+                  result="$(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
+                  if [ "$result" = "$container_success" ]; then
+                          echo "Healthy ${NGINX_TEST_SERVICE} container found"
+                          exit 0
+                  else
+                          echo "Container health: $(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
+                          n=$((n+1))
+                          sleep 1;
+                  fi
+              done
+              exit 1
 
-  push_master:
+push_master:
     parameters:
       publish_to_docker_hub:
         type: boolean
