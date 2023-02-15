@@ -58,7 +58,7 @@ jobs:
       - *global_remote_docker
       - checkout
       - run:
-          name: Build all services in docker-compose file. Exit on error.
+          name: Build and start containers minus the smoke-test service
           # Had to run in the background to ensure the health check continue forever
           command: |
             set -x
@@ -68,7 +68,7 @@ jobs:
               --build \
               -d
       - run:
-          name: Check Nginx Sidecar container can start and send requests
+          name: Check Nginx Sidecar is ready to receive requests
           command: |
             set -x
             docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
@@ -79,7 +79,7 @@ jobs:
             && echo "Healty Container" \
             || { echo "Container state:$(docker inspect -f {{.State.Health.Status}} nginx-test)"; exit 1; }
       - run:
-          name: Smoke test
+          name: Smoke test Nginx Sidecar can proxy pass request
           command: |
             docker compose -f docker-compose.ci.yml up curl-box-test
 
