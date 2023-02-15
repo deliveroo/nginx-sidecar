@@ -54,6 +54,7 @@ jobs:
       NGINX_PORT: 8001
       APP_PORT: 8000
       APP_HOST: echo-server-test
+      NGINX_TEST_SERVICE: nginx-test
     steps:
       - *global_remote_docker
       - checkout
