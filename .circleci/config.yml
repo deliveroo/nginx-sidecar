@@ -59,12 +59,14 @@ jobs:
       - checkout
       - run:
           name: Build all services in docker-compose file. Exit on error.
+          # Had to run in the background to ensure the health check continue forever
           command: |
             set -x
             docker-compose \
               -f docker-compose.ci.yml \
               -p nginx-sidecar up \
-              --build
+              --build \
+              d
       - run:
           name: Check Nginx Sidecar container can start and send requests
           command: |
