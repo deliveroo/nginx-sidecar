@@ -6,7 +6,7 @@ global_context: &global_context
 
 global_remote_docker: &global_remote_docker
   setup_remote_docker:
-    docker_layer_caching: true
+    docker_layer_caching: false
     version: 20.10.18
 
 global_dockerhub_auth: &global_dockerhub_auth
@@ -129,9 +129,6 @@ jobs:
   push_staging:
     <<: *defaults
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
       - *global_remote_docker
       - checkout
       - attach_workspace:
