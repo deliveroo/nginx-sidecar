@@ -59,12 +59,17 @@ jobs:
       - *global_remote_docker
       - checkout
       - run:
-          name: Build services declared in docker-compose file
+          name: Build and start containers minus the smoke-test service
+          # Had to run in the background to ensure the health check continue forever
           command: |
             set -x
-            docker-compose -f docker-compose.ci.yml -p nginx-sidecar up --build --no-start
+            docker-compose \
+              -f docker-compose.ci.yml \
+              -p nginx-sidecar up \
+              --build \
+              -d
       - run:
-          name: Start Containers
+          name: Check Nginx Sidecar is ready to receive requests
           command: |
             set -x
             docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
@@ -86,7 +91,8 @@ jobs:
                   fi
               done
               exit 1
-  push_master:
+
+push_master:
     parameters:
       publish_to_docker_hub:
         type: boolean
@@ -97,7 +103,10 @@ jobs:
           condition:
             equal: [ false, << parameters.publish_to_docker_hub >> ]
           steps:
-            - run: echo "Not publishing to Docker Hub or incrementing the GitHub tags. Set the publish_to_docker_hub value to \"true\" if this is incorrect."
+            - run: 
+                name: Publish to Docker Hub decision
+                command: |
+                  echo "Not publishing to Docker Hub or incrementing the GitHub tags.\n\nSet the publish_to_docker_hub value to \"true\" if you want to publish."
             - run: circleci-agent step halt
       - add_ssh_keys:
           fingerprints:

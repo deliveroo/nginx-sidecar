@@ -23,10 +23,20 @@ services:
       - echo-server-test
     healthcheck:
       test: curl --fail http://${APP_HOST}:${APP_PORT}/ || exit 1
-      interval: 1s
+      interval: 3s
       timeout: 10s
 
   wait-test:
     image: deliveroo/circleci:1.7
     links:
       - nginx-test
+
+  # defaulted to "off" based on profile set
+  curl-box-test:
+    container_name: "curl-box-test"
+    profiles: [ 'smoke-test' ]
+    environment:
+      NGINX_PORT: $NGINX_PORT
+      APP_HOST: $APP_HOST
+    image: curlimages/curl:7.87.0
+    command: --fail http://nginx-test:${NGINX_PORT}/ || exit 1
