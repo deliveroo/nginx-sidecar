@@ -82,17 +82,17 @@ jobs:
               do
                   result="$(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
                   if [ "$result" = "$container_success" ]; then
-                          echo "Healthy ${NGINX_TEST_SERVICE} container found"
+                          echo "Healthy ${NGINX_TEST_SERVICE} container"
                           exit 0
                   else
-                          echo "Container health: $(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
+                          echo "Failed.  Container health: $(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
                           n=$((n+1))
                           sleep 1;
                   fi
               done
               exit 1
 
-push_master:
+  push_master:
     parameters:
       publish_to_docker_hub:
         type: boolean
@@ -165,8 +165,8 @@ staging_only: &staging_only
     branches:
       only:
         - staging
-workflows:
 
+workflows:
   build_test_publish:
     jobs:
       - build:
