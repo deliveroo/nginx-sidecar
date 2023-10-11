@@ -48,6 +48,8 @@ sidecar:
 ## Optional Requirements
 
 `PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+`NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` configures the included access logs.  Use a regex like `^[45]` to 
+include only 4xx and 5xx status codes. The default will log every status code.
 
 ## Example
 

@@ -43,10 +43,20 @@ http {
                     'status=$status upstream_status=$upstream_status duration=$request_time size=$body_bytes_sent '
                     '"$remote_user" "$http_referer" "$http_user_agent"';
 
+  # Conditional logging.
+  # To disable set a regex over the status code.
+  # For example `^[45]` log requests with a 4xx and 5xx status code only.
+  # The default is to match all status codes and log everything.
+  #
+  map $status $loggable {
+    ~<NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX> 1;
+    default 0;
+  }
+
   # Log to stdout.
   # Use the stdout of init on Docker to get the logs to the log drain.
   #
-  access_log /proc/1/fd/1 main;
+  access_log /proc/1/fd/1 main if=$loggable;
 
   tcp_nodelay on;
 
