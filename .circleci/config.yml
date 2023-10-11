@@ -25,7 +25,11 @@ import_image: &import_image
     set -ex
     docker load --input "workspace/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_SHA1}.tar"
 
-
+executors:
+  ubuntu:
+    machine:
+      image: ubuntu-2204:2023.02.1
+    resource_class: small
 
 jobs:
   build:
@@ -49,48 +53,13 @@ jobs:
             - "*.tar"
 
   test:
-    <<: *defaults
-    environment:
-      NGINX_PORT: 8001
-      APP_PORT: 8000
-      APP_HOST: echo-server-test
-      NGINX_TEST_SERVICE: nginx-test
+    executor: ubuntu
     steps:
-      - *global_remote_docker
       - checkout
       - run:
-          name: Build and start containers minus the smoke-test service
+          name: tests
           # Had to run in the background to ensure the health check continue forever
-          command: |
-            set -x
-            docker-compose \
-              -f docker-compose.ci.yml \
-              -p nginx-sidecar up \
-              --build \
-              -d
-      - run:
-          name: Check Nginx Sidecar is ready to receive requests
-          command: |
-            set -x
-            docker-compose -f docker-compose.ci.yml -p nginx-sidecar run wait-test wfi nginx-test:8001 --timeout=60
-      - run:
-            name: Check Nginx Sidecar status is healthy
-            command: |
-              container_success="healthy"
-              n=0
-              until [ "$n" -ge 3 ]
-              do
-                  result="$(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
-                  if [ "$result" = "$container_success" ]; then
-                          echo "Healthy ${NGINX_TEST_SERVICE} container"
-                          exit 0
-                  else
-                          echo "Failed.  Container health: $(docker inspect -f {{.State.Health.Status}} ${NGINX_TEST_SERVICE})"
-                          n=$((n+1))
-                          sleep 1;
-                  fi
-              done
-              exit 1
+          command: bats tests/*.bats
 
   push_master:
     parameters:
