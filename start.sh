@@ -7,6 +7,7 @@ set -ex
 /bin/sed \
   -e "s/<NGINX_STATUS_PORT>/${NGINX_STATUS_PORT:-81}/g" \
   -e "s:<NGINX_STATUS_ALLOW_FROM>:${NGINX_STATUS_ALLOW_FROM:-all}:g" \
+  -e "s/<NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX>/${NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX:-}/g" \
   -e "s/<NGINX_PORT>/${NGINX_PORT}/g" \
   -e "s/<APP_HOST>/${APP_HOST:-app}/g" \
   -e "s/<APP_PORT>/${APP_PORT}/g" \
