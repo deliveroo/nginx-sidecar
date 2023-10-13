@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.13
+
+- enable master branch publishing to dockerhub
+
 ## 0.3.12
 
 - Added status code access log filtering. Set `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX=^[45]`
