@@ -146,7 +146,7 @@ workflows:
             - build
       - push_master:
           <<: *master_only
-          publish_to_docker_hub: false
+          publish_to_docker_hub: true
           requires:
             - build
             - test
