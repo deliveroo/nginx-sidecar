@@ -1,5 +1,10 @@
 #  changelog
 
+## 0.3.12
+
+- Added status code access log filtering. Set `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX=^[45]`
+and only see 4xx and 5xx request logs. Default all status codes are logged.
+
 ## 0.3.11
 
 - Moved to slimmer, Alpine base image to shrink the size of the sidecar.
