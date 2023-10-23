@@ -98,7 +98,9 @@ jobs:
           command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
       - run:
           name: Push Latest and Version image tags
-          command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+          command: |
+            DOCKER_USER="${GLOBAL_DOCKERHUB_USERNAME}" DOCKER_PASS="${GLOBAL_DOCKERHUB_PASSWORD}" push_image_to_docker_hub \
+            "$(./image)" "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
 
   push_staging:
     <<: *defaults
