@@ -44,7 +44,9 @@ http {
                     '"$remote_user" "$http_referer" "$http_user_agent"';
 
   # Conditional logging.
-  # To disable 2xx and 3xx logs set LOG_LEVEL=1 TODO how to parameterize?
+  # To disable set a regex over the status code.
+  # For example `^[45]` log requests with a 4xx and 5xx status code only.
+  # The default is to match all status codes and log everything.
   #
   map $status $loggable {
     ~<NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX> 1;
