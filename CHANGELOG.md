@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.15
+
+- added codeowners and bumped to curl 8.5.0-r0
+
 ## 0.3.13/4
 
 - enable master branch publishing to dockerhub
