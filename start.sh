@@ -2,12 +2,17 @@
 
 set -ex
 
+if [[ "${NGINX_LOGS_INCLUDE_QUERY_PARAMS}" == "true" ]]; then
+  nginx_logs_path_param="request_uri"
+fi
+
 # nginx.conf doesn't support environment variables,
 # so we substitute at run time
 /bin/sed \
   -e "s/<NGINX_STATUS_PORT>/${NGINX_STATUS_PORT:-81}/g" \
   -e "s:<NGINX_STATUS_ALLOW_FROM>:${NGINX_STATUS_ALLOW_FROM:-all}:g" \
   -e "s/<NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX>/${NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX:-}/g" \
+  -e "s/<NGINX_LOGS_PATH_PARAM>/${nginx_logs_path_param:-document_uri}/g" \
   -e "s/<NGINX_PORT>/${NGINX_PORT}/g" \
   -e "s/<APP_HOST>/${APP_HOST:-app}/g" \
   -e "s/<APP_PORT>/${APP_PORT}/g" \
