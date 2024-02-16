@@ -39,7 +39,7 @@ http {
   include /etc/nginx/mime.types;
   default_type application/octet-stream;
 
-  log_format  main  '[nginx] method=$request_method path=$request_uri '
+  log_format  main  '[nginx] method=$request_method path=$<NGINX_LOGS_PATH_PARAM> '
                     'status=$status upstream_status=$upstream_status duration=$request_time size=$body_bytes_sent '
                     '"$remote_user" "$http_referer" "$http_user_agent"';
 

@@ -13,6 +13,7 @@ services:
       dockerfile: Dockerfile
     environment:
       NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX: $NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX
+      NGINX_LOGS_INCLUDE_QUERY_PARAMS: $NGINX_LOGS_INCLUDE_QUERY_PARAMS
       NGINX_PORT: 8001
       APP_PORT: 8000
       APP_HOST: echo-server-test

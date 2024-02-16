@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.16
+
+- Exclude query params from logging path by default with optional override. Set `NGINX_LOGS_INCLUDE_QUERY_PARAMS=true` to enable query params in logs.
+
 ## 0.3.15
 
 - added codeowners and bumped to curl 8.5.0-r0
