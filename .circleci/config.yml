@@ -7,7 +7,6 @@ global_context: &global_context
 global_remote_docker: &global_remote_docker
   setup_remote_docker:
     docker_layer_caching: true
-    version: 20.10.18
 
 global_dockerhub_auth: &global_dockerhub_auth
   auth:
@@ -72,7 +71,7 @@ jobs:
           condition:
             equal: [ false, << parameters.publish_to_docker_hub >> ]
           steps:
-            - run: 
+            - run:
                 name: Publish to Docker Hub decision
                 command: |
                   echo "Not publishing to Docker Hub or incrementing the GitHub tags.\n\nSet the publish_to_docker_hub value to \"true\" if you want to publish."
