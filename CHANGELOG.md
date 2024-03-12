@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.17
+
+- Allow override of `keepalive_timeout` via `KEEPALIVE_TIMEOUT` environment variable. Default is 20s (which is different than the Nginx default of 75s) for historical reasons.
+
 ## 0.3.16
 
 - Exclude query params from logging path by default with optional override. Set `NGINX_LOGS_INCLUDE_QUERY_PARAMS=true` to enable query params in logs.
