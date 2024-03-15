@@ -60,7 +60,7 @@ http {
 
   tcp_nodelay on;
 
-  keepalive_timeout <KEEPALIVE_TIMEOUT>;
+  keepalive_timeout <NGINX_KEEPALIVE_TIMEOUT>;
 
   gzip on;
   gzip_http_version 1.0;

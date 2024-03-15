@@ -2,7 +2,7 @@
 
 ## 0.3.17
 
-- Allow override of `keepalive_timeout` via `KEEPALIVE_TIMEOUT` environment variable. Default is 20s (which is different than the Nginx default of 75s) for historical reasons.
+- Allow override of `keepalive_timeout` via `NGINX_KEEPALIVE_TIMEOUT` environment variable. Default is 20s (which is different than the Nginx default of 75s) for historical reasons.
 
 ## 0.3.16
 
