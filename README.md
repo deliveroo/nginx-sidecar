@@ -47,9 +47,9 @@ sidecar:
 
 ## Optional Requirements
 
-`PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
-`NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` configures the included access logs.  Use a regex like `^[45]` to 
-include only 4xx and 5xx status codes. The default will log every status code.
+- `PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
+- `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` configures the included access logs.  Use a regex like `^[45]` to include only 4xx and 5xx status codes. The default will log every status code.
+- `NGINX_KEEPALIVE_TIMEOUT` sets keepalive_timeout. (default: 20s)
 
 ## Example
 
@@ -104,7 +104,7 @@ services:
         # If you want a custom timeout for the request
         - name: PROXY_TIMEOUT
           value: '10s'
-        
+
         # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels
         # in order to expose them
         dockerLabels:

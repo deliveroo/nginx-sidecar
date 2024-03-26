@@ -60,7 +60,7 @@ http {
 
   tcp_nodelay on;
 
-  keepalive_timeout 20s; # default 75s
+  keepalive_timeout <NGINX_KEEPALIVE_TIMEOUT>;
 
   gzip on;
   gzip_http_version 1.0;

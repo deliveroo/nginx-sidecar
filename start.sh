@@ -18,6 +18,7 @@ fi
   -e "s/<APP_PORT>/${APP_PORT}/g" \
   -e "s/<CLIENT_BODY_BUFFER_SIZE>/${CLIENT_BODY_BUFFER_SIZE:-8k}/g" \
   -e "s:<PROXY_TIMEOUT>:${PROXY_TIMEOUT:-60s}:g" \
+  -e "s:<NGINX_KEEPALIVE_TIMEOUT>:${NGINX_KEEPALIVE_TIMEOUT:-20s}:g" \
   /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 # Wait for the application to start before accepting ALB requests.
