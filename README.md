@@ -50,6 +50,7 @@ sidecar:
 - `PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
 - `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` configures the included access logs.  Use a regex like `^[45]` to include only 4xx and 5xx status codes. The default will log every status code.
 - `NGINX_KEEPALIVE_TIMEOUT` sets keepalive_timeout. (default: 20s)
+- `NGINX_CLIENT_MAX_BODY_SIZE` sets the maximum request body size (default: 5MB)
 
 ## Example
 

@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.18
+
+- Allow override of `client_max_body_size` via `NGINX_CLIENT_MAX_BODY_SIZE` environment variable. Keeping the default to 5MB if not set.
+
 ## 0.3.17
 
 - Allow override of `keepalive_timeout` via `NGINX_KEEPALIVE_TIMEOUT` environment variable. Default is 20s (which is different than the Nginx default of 75s) for historical reasons.
