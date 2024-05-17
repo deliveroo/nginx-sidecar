@@ -1,5 +1,7 @@
 #  changelog
 
+## 0.3.19
+- Allow setting `worker_shutdown_timeout`. [Link to documentation](https://nginx.org/en/docs/ngx_core_module.html#worker_shutdown_timeout). If not set it will [default to 0](https://hg.nginx.org/nginx/rev/97c99bb43737).
 ## 0.3.18
 
 - Allow override of `client_max_body_size` via `NGINX_CLIENT_MAX_BODY_SIZE` environment variable. Keeping the default to 5MB if not set.

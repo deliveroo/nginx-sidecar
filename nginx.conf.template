@@ -12,6 +12,10 @@ worker_processes 1;
 #
 worker_rlimit_nofile 4096;
 
+# Configures a timeout for a graceful shutdown of worker processes. 
+# When the time expires, nginx will try to close all the connections currently open to facilitate shutdown.
+worker_shutdown_timeout <NGINX_WORKER_SHUTDOWN_TIMEOUT>;
+
 # Log to stdout.
 # Use the stdout of init on Docker to get the logs to the log drain.
 #
