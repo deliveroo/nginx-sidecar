@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.19
+
+- Bump Nginx to version 1.27 from 1.23.  and cURL ( `8.9.1-r1` )
+
 ## 0.3.18
 
 - Allow override of `client_max_body_size` via `NGINX_CLIENT_MAX_BODY_SIZE` environment variable. Keeping the default to 5MB if not set.
