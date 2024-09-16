@@ -1,9 +1,7 @@
 version: "3.8"
 services:
   echo-server-test:
-    image: mendhak/http-https-echo:30
-    environment:
-      HTTP_PORT: 8000
+    image: hashicorp/http-echo
 
   nginx-test:
     # name required for Healthy Container CI/CD check
@@ -15,7 +13,7 @@ services:
       NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX: $NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX
       NGINX_LOGS_INCLUDE_QUERY_PARAMS: $NGINX_LOGS_INCLUDE_QUERY_PARAMS
       NGINX_PORT: 8001
-      APP_PORT: 8000
+      APP_PORT: 5678
       APP_HOST: echo-server-test
     ports:
       - 8001:8001

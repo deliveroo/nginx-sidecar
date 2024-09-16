@@ -1,6 +1,6 @@
 FROM nginx:1.27.1-alpine-slim
 
-RUN apk --no-cache add curl=8.9.1-r1
+RUN apk --no-cache add curl=8.10.0-r0
 
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
