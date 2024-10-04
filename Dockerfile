@@ -1,7 +1,5 @@
 FROM nginx:1.27.1-alpine-slim
 
-RUN apk --no-cache add curl=8.9.1-r1
-
 COPY nginx.conf.template /etc/nginx/nginx.conf.template
 COPY start.sh /usr/bin/start.sh
 RUN chmod a+x /usr/bin/start.sh
