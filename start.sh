@@ -22,9 +22,9 @@ fi
   -e "s:<NGINX_CLIENT_MAX_BODY_SIZE>:${NGINX_CLIENT_MAX_BODY_SIZE:-5M}:g" \
   /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
-# Wait for the application to start before accepting ALB requests.
 while sleep 2; do
-  curl --verbose --fail --max-time 5 "http://${APP_HOST:-app}:${APP_PORT}${HEALTHCHECK_PATH:-/health}" && break
+  wget --spider "http://${APP_HOST:-app}:${APP_PORT}${HEALTHCHECK_PATH:-/health}" || continue
+  break
 done
 
 # run in foreground as pid 1

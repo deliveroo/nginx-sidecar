@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.20
+
+- Remove `curl` install from Dockerfile and use `wget` instead which already exists in the image
+
 ## 0.3.19
 
 - Bump Nginx to version 1.27 from 1.23.  and cURL ( `8.9.1-r1` )
