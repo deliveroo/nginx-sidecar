@@ -1,0 +1,6 @@
+version: "1"
+scopes:
+  nginx-sidecar-production:
+    project_root: "./infrastructure/environments/production"
+  nginx-sidecar-staging:
+    project_root: "./infrastructure/environments/staging"
