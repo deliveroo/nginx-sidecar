@@ -1,12 +1,3 @@
-// Add to CircleCI-IAM-Users to get access to the shared IAM Policies
-// needed to work with ECR and Lambda S3 bucket
-resource "aws_iam_user_group_membership" "circleci_users" {
-  user = module.my-app-circleci-user.name
-  groups = [
-    "CircleCI-IAM-Users"
-  ]
-}
-
 data "aws_iam_policy_document" "assume_policy_circleci_oidc" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]

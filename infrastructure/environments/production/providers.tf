@@ -24,7 +24,7 @@ provider "aws" {
     session_name = "geopoiesis-global_eu_east_1_production"
   }
 }
-
+provider "circleci" {}
 provider "roo" {
   env_name                = "production"
   default_ownership_group = "production-platforms-nec"

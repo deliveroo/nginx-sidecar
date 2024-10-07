@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  aws-cli: circleci/aws-cli@3.1.5
+
 global_context: &global_context
   context:
     - org-global
@@ -76,6 +79,12 @@ jobs:
                 command: |
                   echo "Not publishing to Docker Hub or incrementing the GitHub tags.\n\nSet the publish_to_docker_hub value to \"true\" if you want to publish."
             - run: circleci-agent step halt
+      - aws-cli/setup:
+          role-arn: ${OIDC_ROLE_ARN}
+          aws-region: us-east-1 # Public ECR Repo
+          role-session-name: nginx-sidecar-publish
+          profile-name: OIDC-PROFILE
+
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
@@ -100,6 +109,16 @@ jobs:
           command: |
             DOCKER_USER="${GLOBAL_DOCKERHUB_USERNAME}" DOCKER_PASS="${GLOBAL_DOCKERHUB_PASSWORD}" push_image_to_docker_hub \
             "$(./image)" "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+      - run:
+          name: Push to Public ECR
+          command: |
+            # Get the ECR Password and log in to Docker
+            aws ecr-public get-login-password --profile OIDC-PROFILE | \
+            docker login --username AWS --password-stdin public.ecr.aws
+            # Tag the image with the ECR Repo
+            docker tag "$(./image)" "${AWS_ECR_REPO_URL}"
+            # Push it up
+            docker push "${AWS_ECR_REPO_URL}"
 
   push_staging:
     <<: *defaults
