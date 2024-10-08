@@ -2,7 +2,7 @@ resource "circleci_envvar" "aws_ecr_repo" {
   vcs_provider   = "github"
   project_name   = local.circleci_project_name
   variable_name  = "AWS_ECR_REPO_URL"
-  variable_value = aws_ecrpublic_repository.nginx-sidecar.repository_url
+  variable_value = aws_ecrpublic_repository.nginx-sidecar.repository_uri
 }
 
 resource "circleci_envvar" "oidc_role" {
