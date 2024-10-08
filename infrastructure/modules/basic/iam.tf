@@ -20,7 +20,39 @@ resource "aws_iam_role" "circleci_oidc" {
   assume_role_policy = data.aws_iam_policy_document.assume_policy_circleci_oidc.json
 }
 
+data "aws_iam_policy" "circleci_oidc" {
+  name = "CircleCI-OIDC-Access"
+}
+
 resource "aws_iam_role_policy_attachment" "circleci_oidc" {
   role       = aws_iam_role.circleci_oidc.name
   policy_arn = data.aws_iam_policy.circleci_oidc.arn
+}
+
+data "aws_iam_policy_document" "ecr_policy" {
+  statement {
+    sid    = "NginxSidecarPublicECRPolicy"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = [aws_iam_role.circleci_oidc.arn]
+    }
+
+    actions = [
+      "ecr-public:GetDownloadUrlForLayer",
+      "ecr-public:BatchGetImage",
+      "ecr-public:BatchCheckLayerAvailability",
+      "ecr-public:PutImage",
+      "ecr-public:InitiateLayerUpload",
+      "ecr-public:UploadLayerPart",
+      "ecr-public:CompleteLayerUpload",
+      "ecr-public:DescribeRepositories",
+      "ecr-public:ListImages",
+    ]
+  }
+}
+resource "aws_ecrpublic_repository_policy" "ecr_policy" {
+  repository_name = aws_ecrpublic_repository.nginx-sidecar.repository_name
+  policy          = data.aws_iam_policy_document.ecr_policy.json
 }
