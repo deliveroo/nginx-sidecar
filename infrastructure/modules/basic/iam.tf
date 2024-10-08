@@ -20,13 +20,32 @@ resource "aws_iam_role" "circleci_oidc" {
   assume_role_policy = data.aws_iam_policy_document.assume_policy_circleci_oidc.json
 }
 
-data "aws_iam_policy" "circleci_oidc" {
-  name = "CircleCI-OIDC-Access"
+data "aws_iam_policy_document" "circleci_oidc" {
+  statement {
+    actions = [
+      "ecr-public:BatchCheckLayerAvailability",
+      "ecr-public:BatchGetImage",
+      "ecr-public:CompleteLayerUpload",
+      "ecr-public:DescribeRepositories",
+      "ecr-public:GetDownloadUrlForLayer",
+      "ecr-public:InitiateLayerUpload",
+      "ecr-public:ListImages",
+      "ecr-public:PutImage",
+      "ecr-public:UploadLayerPart",
+    ]
+
+    resources = [aws_ecrpublic_repository.nginx-sidecar.arn]
+  }
+}
+
+resource "aws_iam_policy" "circleci_oidc" {
+  name   = "NginxSidecarCircleCI"
+  policy = data.aws_iam_policy_document.circleci_oidc.json
 }
 
 resource "aws_iam_role_policy_attachment" "circleci_oidc" {
   role       = aws_iam_role.circleci_oidc.name
-  policy_arn = data.aws_iam_policy.circleci_oidc.arn
+  policy_arn = aws_iam_policy.circleci_oidc.arn
 }
 
 data "aws_iam_policy_document" "ecr_policy" {
