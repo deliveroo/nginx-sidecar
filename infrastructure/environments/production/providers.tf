@@ -26,7 +26,7 @@ provider "aws" {
 }
 provider "circleci" {}
 provider "roo" {
-  env_name                = "production"
+  default_env_name        = "production"
   default_ownership_group = "production-platforms-nec"
   default_shard_name      = "global"
 }
