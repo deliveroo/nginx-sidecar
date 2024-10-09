@@ -1,16 +1,14 @@
-data "roo_tags" "global_production" {}
-data "roo_aws_account" "global" {}
 provider "aws" {
-  alias  = "global_production"
+  alias  = "global_platform"
   region = "eu-west-1"
 
   default_tags {
-    tags = data.roo_tags.global_production.aws_tags
+    tags = data.roo_tags.global_platform.aws_tags
   }
 
   assume_role {
     role_arn     = data.roo_aws_account.global.terraform_deploy_role_arn
-    session_name = "geopoiesis-global_production"
+    session_name = "geopoiesis-global_platform"
   }
 }
 
@@ -19,16 +17,16 @@ provider "aws" {
   alias  = "us_east_1"
   region = "us-east-1"
   default_tags {
-    tags = data.roo_tags.global_production.aws_tags
+    tags = data.roo_tags.global_platform.aws_tags
   }
   assume_role {
     role_arn     = data.roo_aws_account.global.terraform_deploy_role_arn
-    session_name = "geopoiesis-global_eu_east_1_production"
+    session_name = "geopoiesis-global_eu_east_1_platform"
   }
 }
 provider "circleci" {}
 provider "roo" {
-  default_env_name        = "production"
+  default_env_name        = "platform"
   default_ownership_group = "production-platforms-nec"
   default_shard_name      = "global"
 }
