@@ -12,7 +12,7 @@ resource "circleci_envvar" "oidc_role" {
   variable_value = aws_iam_role.circleci_oidc.arn
 }
 
-resource "circleci_envvar" "aws_ecr_repo" {
+resource "circleci_envvar" "aws_ecr_repo_region" {
   vcs_provider   = "github"
   project_name   = local.circleci_project_name
   variable_name  = "ECR_AWS_REGION"
