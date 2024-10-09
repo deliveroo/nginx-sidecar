@@ -81,7 +81,7 @@ jobs:
             - run: circleci-agent step halt
       - aws-cli/setup:
           role-arn: ${OIDC_ROLE_ARN}
-          aws-region: us-east-1 # Public ECR Repo
+          aws-region: ${ECR_AWS_REGION} # Public ECR Repo
           role-session-name: nginx-sidecar-publish
           profile-name: OIDC-PROFILE
 
