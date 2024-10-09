@@ -72,6 +72,7 @@ data "aws_iam_policy_document" "ecr_policy" {
   }
 }
 resource "aws_ecrpublic_repository_policy" "ecr_policy" {
+  provider        = aws.us_east_1
   repository_name = aws_ecrpublic_repository.nginx-sidecar.repository_name
   policy          = data.aws_iam_policy_document.ecr_policy.json
 }
