@@ -4,3 +4,5 @@ scopes:
     project_root: "./infrastructure/environments/production"
   nginx-sidecar-staging:
     project_root: "./infrastructure/environments/staging"
+  nginx-sidecar-platform:
+    project_root: "./infrastructure/environments/platform"
