@@ -125,9 +125,9 @@ jobs:
       - run:
           name: Tag the Docker image
           command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
-      - run:
-          name: Push the image to Dockerhub
-          command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+      # - run:
+      #     name: Push the image to Dockerhub
+      #     command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
       - run:
           name: Push to Public ECR
           command: |
