@@ -1,9 +1,4 @@
 locals {
-  iam_tags_for_shared_policies = {
-    ECRRepoName = local.ecr_repo_name
-  }
-  default_tags = merge(data.aws_default_tags.current.tags, local.iam_tags_for_shared_policies)
-
   circleci_oidc_url           = "oidc.circleci.com/org/"
   circleci_org_id             = "c53c93bf-aea8-45c3-9aae-984a3f5229a3"
   circleci_oidc_subject_claim = "sub"
