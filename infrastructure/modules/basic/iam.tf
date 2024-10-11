@@ -27,6 +27,7 @@ data "aws_iam_policy_document" "circleci_oidc" {
       "ecr:BatchGetImage",
       "ecr:CompleteLayerUpload",
       "ecr:DescribeRepositories",
+      "ecr:GetAuthorizationToken",
       "ecr:GetDownloadUrlForLayer",
       "ecr:InitiateLayerUpload",
       "ecr:ListImages",
@@ -64,6 +65,7 @@ data "aws_iam_policy_document" "ecr_policy" {
     }
 
     actions = [
+      "ecr:GetAuthorizationToken",
       "ecr:GetDownloadUrlForLayer",
       "ecr:BatchGetImage",
       "ecr:BatchCheckLayerAvailability",

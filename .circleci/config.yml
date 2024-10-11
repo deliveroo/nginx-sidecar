@@ -113,7 +113,6 @@ jobs:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
       - aws-cli/setup:
           role-arn: ${OIDC_ROLE_ARN}
-          aws-region: ECR_AWS_REGION
           role-session-name: nginx-sidecar-publish
           profile-name: OIDC-PROFILE
       - *global_remote_docker
