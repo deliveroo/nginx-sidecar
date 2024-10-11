@@ -23,18 +23,19 @@ resource "aws_iam_role" "circleci_oidc" {
 data "aws_iam_policy_document" "circleci_oidc" {
   statement {
     actions = [
-      "ecr-public:BatchCheckLayerAvailability",
-      "ecr-public:BatchGetImage",
-      "ecr-public:CompleteLayerUpload",
-      "ecr-public:DescribeRepositories",
-      "ecr-public:GetDownloadUrlForLayer",
-      "ecr-public:InitiateLayerUpload",
-      "ecr-public:ListImages",
-      "ecr-public:PutImage",
-      "ecr-public:UploadLayerPart",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:BatchGetImage",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeRepositories",
+      "ecr:GetAuthorizationToken",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:InitiateLayerUpload",
+      "ecr:ListImages",
+      "ecr:PutImage",
+      "ecr:UploadLayerPart",
     ]
 
-    resources = [aws_ecrpublic_repository.nginx-sidecar.arn]
+    resources = [aws_ecr_repository.nginx-sidecar.arn]
   }
 }
 
@@ -50,29 +51,34 @@ resource "aws_iam_role_policy_attachment" "circleci_oidc" {
 
 data "aws_iam_policy_document" "ecr_policy" {
   statement {
-    sid    = "NginxSidecarPublicECRPolicy"
+    sid    = "NginxSidecarECRPolicy"
     effect = "Allow"
 
     principals {
       type        = "AWS"
-      identifiers = [aws_iam_role.circleci_oidc.arn]
+      identifiers = ["*"]
+    }
+    condition {
+      test     = "ForAnyValue:StringLike"
+      values   = [data.roo_environment.current.apps_aws_organization_path]
+      variable = "aws:PrincipalOrgPaths"
     }
 
     actions = [
-      "ecr-public:GetDownloadUrlForLayer",
-      "ecr-public:BatchGetImage",
-      "ecr-public:BatchCheckLayerAvailability",
-      "ecr-public:PutImage",
-      "ecr-public:InitiateLayerUpload",
-      "ecr-public:UploadLayerPart",
-      "ecr-public:CompleteLayerUpload",
-      "ecr-public:DescribeRepositories",
-      "ecr-public:ListImages",
+      "ecr:GetAuthorizationToken",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
+      "ecr:PutImage",
+      "ecr:InitiateLayerUpload",
+      "ecr:UploadLayerPart",
+      "ecr:CompleteLayerUpload",
+      "ecr:DescribeRepositories",
+      "ecr:ListImages",
     ]
   }
 }
-resource "aws_ecrpublic_repository_policy" "ecr_policy" {
-  provider        = aws.us_east_1
-  repository_name = aws_ecrpublic_repository.nginx-sidecar.repository_name
-  policy          = data.aws_iam_policy_document.ecr_policy.json
+resource "aws_ecr_repository_policy" "ecr_policy" {
+  repository = aws_ecr_repository.nginx-sidecar.repository_name
+  policy     = data.aws_iam_policy_document.ecr_policy.json
 }

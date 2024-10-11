@@ -7,7 +7,7 @@ provider "aws" {
   }
 
   assume_role {
-    role_arn     = data.roo_aws_account.global.terraform_deploy_role_arn
+    role_arn     = data.roo_shard_info.current.terraform_deploy_role_arn
     session_name = "geopoiesis-global_platform"
   }
 }
@@ -20,7 +20,7 @@ provider "aws" {
     tags = data.roo_tags.global_platform.aws_tags
   }
   assume_role {
-    role_arn     = data.roo_aws_account.global.terraform_deploy_role_arn
+    role_arn     = data.roo_shard_info.current.terraform_deploy_role_arn
     session_name = "geopoiesis-global_eu_east_1_platform"
   }
 }
