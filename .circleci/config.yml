@@ -1,7 +1,7 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@3.1.5
+  aws-cli: circleci/aws-cli@5.1.1
 
 global_context: &global_context
   context:
@@ -111,30 +111,27 @@ jobs:
       - add_ssh_keys:
           fingerprints:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
-      - aws-cli/setup:
-          role-arn: ${OIDC_ROLE_ARN}
-          role-session-name: nginx-sidecar-publish
-          profile-name: OIDC-PROFILE
       - *global_remote_docker
       - checkout
       - attach_workspace:
           at: workspace
+      - aws-cli/setup:
+          role_arn: ${OIDC_ROLE_ARN}
+          role_session_name: nginx-sidecar-publish
       - run:
           <<: *import_image
       - run:
           name: Tag the Docker image
-          command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
-      # - run:
-      #     name: Push the image to Dockerhub
-      #     command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+          command: |
+            docker tag $(./image) ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging
       - run:
-          name: Push to Public ECR
+          name: Push to ECR
           command: |
             # Get the ECR Password and log in to Docker
-            aws ecr get-login-password --profile OIDC-PROFILE | \
-            docker login --username AWS --password-stdin ${AWS_ECR_REPO_URL}
+            aws ecr get-login-password | \
+            docker login --username AWS --password-stdin https://${AWS_ECR_REPO_URL}
             # Push it up
-            docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+            docker push ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging 
 
 
 
