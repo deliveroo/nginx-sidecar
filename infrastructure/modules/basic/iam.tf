@@ -27,7 +27,6 @@ data "aws_iam_policy_document" "circleci_oidc" {
       "ecr:BatchGetImage",
       "ecr:CompleteLayerUpload",
       "ecr:DescribeRepositories",
-      "ecr:GetAuthorizationToken",
       "ecr:GetDownloadUrlForLayer",
       "ecr:InitiateLayerUpload",
       "ecr:ListImages",
@@ -36,6 +35,11 @@ data "aws_iam_policy_document" "circleci_oidc" {
     ]
 
     resources = [aws_ecr_repository.nginx-sidecar.arn]
+  }
+
+  statement {
+    actions   = ["ecr:GetAuthorizationToken"]
+    resources = ["*"]
   }
 }
 
