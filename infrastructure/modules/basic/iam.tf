@@ -32,6 +32,7 @@ data "aws_iam_policy_document" "circleci_oidc" {
       "ecr:ListImages",
       "ecr:PutImage",
       "ecr:UploadLayerPart",
+      "ecr:GetAuthorizationToken",
     ]
 
     resources = [aws_ecr_repository.nginx-sidecar.arn]
