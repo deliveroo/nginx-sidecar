@@ -17,6 +17,6 @@ resource "circleci_envvar" "oidc_role" {
 resource "circleci_envvar" "aws_region" {
   vcs_provider   = "github"
   project_name   = local.circleci_project_name
-  variable_name  = "AWS_DEFAULT_REPO"
+  variable_name  = "AWS_DEFAULT_REGION"
   variable_value = "eu-west-1"
 }
