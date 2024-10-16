@@ -122,18 +122,16 @@ jobs:
           <<: *import_image
       - run:
           name: Tag the Docker image
-          command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
-      # - run:
-      #     name: Push the image to Dockerhub
-      #     command: docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+          command: |
+            docker tag $(./image) ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging
       - run:
-          name: Push to Public ECR
+          name: Push to ECR
           command: |
             # Get the ECR Password and log in to Docker
             aws ecr get-login-password | \
             docker login --username AWS --password-stdin https://${AWS_ECR_REPO_URL}
             # Push it up
-            docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
+            docker push ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging 
 
 
 
