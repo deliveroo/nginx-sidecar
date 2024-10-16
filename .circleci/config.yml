@@ -131,7 +131,7 @@ jobs:
           command: |
             # Get the ECR Password and log in to Docker
             aws ecr get-login-password | \
-            docker login --username AWS --password-stdin ${AWS_ECR_REPO_URL}
+            docker login --username AWS --password-stdin https://${AWS_ECR_REPO_URL}
             # Push it up
             docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
 
