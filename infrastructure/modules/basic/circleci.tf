@@ -4,7 +4,7 @@ resource "circleci_envvar" "aws_ecr_repo" {
   variable_name = "AWS_ECR_REPO_URL"
   # input: aws_account_id.dkr.ecr.region.amazonaws.com/repositoryName
   # output: aws_account_id.dkr.ecr.region.amazonaws.com
-  variable_value = split("/", aws_ecr_repository.nginx-sidecar.repository_uri)[0]
+  variable_value = split("/", aws_ecr_repository.nginx-sidecar.repository_url)[0]
 }
 
 resource "circleci_envvar" "oidc_role" {
