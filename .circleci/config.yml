@@ -118,7 +118,6 @@ jobs:
       - aws-cli/setup:
           role_arn: ${OIDC_ROLE_ARN}
           role_session_name: nginx-sidecar-publish
-          profile_name: OIDC-PROFILE
       - run:
           <<: *import_image
       - run:
@@ -131,7 +130,7 @@ jobs:
           name: Push to Public ECR
           command: |
             # Get the ECR Password and log in to Docker
-            aws ecr get-login-password --profile OIDC-PROFILE --endpoint-url https://${AWS_ECR_REPO_URL} | \
+            aws ecr get-login-password | \
             docker login --username AWS --password-stdin ${AWS_ECR_REPO_URL}
             # Push it up
             docker push "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:staging"
