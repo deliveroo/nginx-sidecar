@@ -119,7 +119,6 @@ jobs:
           role_arn: ${OIDC_ROLE_ARN}
           role_session_name: nginx-sidecar-publish
           profile_name: OIDC-PROFILE
-          region: AWS_DEFAULT_REGION
       - run:
           <<: *import_image
       - run:
