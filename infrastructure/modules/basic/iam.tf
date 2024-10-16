@@ -79,6 +79,6 @@ data "aws_iam_policy_document" "ecr_policy" {
   }
 }
 resource "aws_ecr_repository_policy" "ecr_policy" {
-  repository = aws_ecr_repository.nginx-sidecar.repository_name
+  repository = local.ecr_repo_name
   policy     = data.aws_iam_policy_document.ecr_policy.json
 }
