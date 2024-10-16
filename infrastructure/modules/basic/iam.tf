@@ -68,20 +68,42 @@ data "aws_iam_policy_document" "ecr_policy" {
       variable = "aws:PrincipalOrgPaths"
     }
 
+    // Only actions that are for uploading images
     actions = [
-      "ecr:GetAuthorizationToken",
-      "ecr:GetDownloadUrlForLayer",
-      "ecr:BatchGetImage",
-      "ecr:BatchCheckLayerAvailability",
       "ecr:PutImage",
       "ecr:InitiateLayerUpload",
       "ecr:UploadLayerPart",
       "ecr:CompleteLayerUpload",
+    ]
+  }
+
+  statement {
+    sid    = "NginxSidecarPullECRPolicy"
+    effect = "Allow"
+
+    principals {
+      type        = "AWS"
+      identifiers = ["*"]
+    }
+    condition {
+      test = "ForAnyValue:StringLike"
+      // Pull out the top level org ID and allow any of our accounts to pull
+      values   = ["${split("/", data.roo_environment.current.apps_aws_organization_path)[0]}/*"]
+      variable = "aws:PrincipalOrgPaths"
+    }
+
+    // Actions for any account, i.e. downloading images
+    actions = [
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchGetImage",
+      "ecr:BatchCheckLayerAvailability",
       "ecr:DescribeRepositories",
       "ecr:ListImages",
     ]
   }
 }
+
+
 resource "aws_ecr_repository_policy" "ecr_policy" {
   repository = local.ecr_repo_name
   policy     = data.aws_iam_policy_document.ecr_policy.json
