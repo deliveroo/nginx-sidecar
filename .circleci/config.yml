@@ -107,13 +107,17 @@ jobs:
       - run:
           name: ECR - Add Tag and Push
           command: |
-            # Tag the image how ECR expects it (remove the username from the repo)
-            docker tag $(./image) ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging
+            # define the image name how ECR expects it
+            image_name=${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}
+            # Tag the image with version and latest
+            docker tag $(./image) $image_name:$(cat VERSION)
+            docker tag $(./image) $image_name:latest
             # Get the ECR Password and log in to Docker
             aws ecr get-login-password | \
             docker login --username AWS --password-stdin https://${AWS_ECR_REPO_URL}
-            # Push it up
-            docker push ${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}:staging 
+            # Push it up, second push only pushes the tag
+            docker push $image_name:$(cat VERSION)
+            docker push $image_name:latest
 
 
   push_staging:
