@@ -84,6 +84,9 @@ jobs:
             - a7:2f:cb:c2:b3:6a:17:c4:8f:3a:8d:77:57:d3:41:bb
       - *global_remote_docker
       - checkout
+      - aws-cli/setup:
+          role_arn: ${OIDC_ROLE_ARN}
+          role_session_name: nginx-sidecar-publish
       - attach_workspace:
           at: workspace
       - run:
@@ -96,13 +99,25 @@ jobs:
             git tag "$(cat VERSION)"
             git push --tags
       - run:
-          name: Add Latest Tag
-          command: docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
-      - run:
-          name: Push Latest and Version image tags
+          name: Dockerhub - Add Tag and Push
           command: |
+            docker tag $(./image) "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
             DOCKER_USER="${GLOBAL_DOCKERHUB_USERNAME}" DOCKER_PASS="${GLOBAL_DOCKERHUB_PASSWORD}" push_image_to_docker_hub \
             "$(./image)" "${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:latest"
+      - run:
+          name: ECR - Add Tag and Push
+          command: |
+            # define the image name how ECR expects it
+            image_name=${AWS_ECR_REPO_URL}/${CIRCLE_PROJECT_REPONAME}
+            # Tag the image with version and latest
+            docker tag $(./image) $image_name:$(cat VERSION)
+            docker tag $(./image) $image_name:latest
+            # Get the ECR Password and log in to Docker
+            aws ecr get-login-password | \
+            docker login --username AWS --password-stdin https://${AWS_ECR_REPO_URL}
+            # Push it up, second push only pushes the tag
+            docker push $image_name:$(cat VERSION)
+            docker push $image_name:latest
 
 
   push_staging:

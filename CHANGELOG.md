@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.21
+
+- Double dispatch `nginx-sidecar` image to Dockerhub and our private ECR Repo in our `platform` account.
+
 ## 0.3.20
 
 - Remove `curl` install from Dockerfile and use `wget` instead which already exists in the image
