@@ -1,0 +1,11 @@
+#!/bin/env bash
+# Requires readonly AWS CLI permissions
+
+image_base=930404128139.dkr.ecr.eu-west-1.amazonaws.com/nginx-sidecar
+version=staging
+
+[ -n "$1" ] && version=$1
+
+aws ecr get-login-password | docker login --username AWS --password-stdin https://${image_base}
+docker pull ${image_base}:${version}
+
