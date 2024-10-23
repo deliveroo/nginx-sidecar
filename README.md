@@ -4,22 +4,110 @@
 
 A simple nginx `Reverse Proxy` sidecar, which can be placed in front an application's web container to queue requests and to provide statistics to New Relic about request queuing.
 
+:warning: This relies on the legacy `--link` flag of Docker/ECS and requires the `bridged` networking mode which is the default networking mode in our tasks.
+
+### Contents
+- [Set up](#set-up)
+    - [Example](#example)
+    - [Requirements](#requirements)
+    - [Optional customisations](#optional-customisations)
+- [Stats Monitoring](#stats-monitoring)
+- [Local Debugging](#local-debugging)
+- [Contributing](#contributing)
+
+## Set up
+
+`nginx` can be placed in front of your application using the `sidecars` section of a Hopper service definition in your Hopper config.
+
+Read the [requirements](#requirements) and [optional customisations](#optional-customisations) sections for information on how to customise your `nginx` set up.
+
+Full details of the schema can be found at <https://hopper.deliveroo.net/config-docs>, note that customisation is done through Environment Variables and this information isn't included in the schema (yet).
+
+### Example
+
+The following is an example of how to set up `nginx` with default settings, passing in the required fields.
+
+```yaml
+# ...
+
+services:
+  web:
+    sidecars:
+      nginx:
+        # Needs to match your service name, in this case it's 'web', because nginx
+        # will be the main entry container for your service.
+        container_name: web
+        # The port Nginx will listen on, i.e. the port the ALB should forward requests to.
+        # This must match the port you've defined for your service with `roo-service`
+        nginx_port: 8008
+        # The port your application container is listening on. Nginx will forward requests to this port.
+        app_port: 8008
+    containerDefinitions:
+      # Your application container, defined as normal, but named 'app'
+      # Note: you can change the container name you use here, see the
+      # optional customisation sections of this README for more information
+      app:
+        cpu: 1024
+        memory: 1024
+        essential: true
+        command: "exec puma -p 3001 -C config/puma.rb"
+  # ...
+```
+
+
 ## Requirements
 
-- The application must be linked (either by Docker `--link` or ECS `links` section) as `app`.
-- The `NGINX_PORT` environment variable should be set to the port nginx should bind to.
-- The `APP_PORT` environment variable should be set to the port that the application is bound to inside the `app` container.
+There are three requirements when defining an `nginx` sidecar in Hopper:
+
+- `nginx_port` must be set to the port nginx should bind to.
+- `app_port` must be set to the port that the application is bound to inside the `app` container.
+- `container_name` must be set to the name of your service, e.g. if your service is called `web` then this field is `web`.
+
+## Optional Customisations
+
+`nginx` can be customised using environment variables, these are passed to the `environment` field of the `nginx` config:
+
+```yaml
+services:
+  web:
+    sidecars:
+      nginx:
+        container_name: web
+        nginx_port: 8008
+        app_port: 8008
+        environment:
+          - name: APP_HOST
+            value: 'app-worker'
+          # ...
+```
+
+Here is a list of available customisation environment variables:
+
+- `APP_HOST` (default: app) the name of your application container. You can use this if you want to give your application container a more meaningful name.
+- `CLIENT_BODY_BUFFER_SIZE` (default: 8k) sets the client_body_buffer_size.
+- `NGINX_CLIENT_MAX_BODY_SIZE` (default: 5MB) sets the maximum request body size.
+- `NGINX_KEEPALIVE_TIMEOUT` (default: 20s) sets keepalive_timeout.
+- `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` (default: not set, log all) configures the included access logs.  Use a regex like `^[45]` to include only 4xx and 5xx status codes.
+- `NGINX_STATUS_ALLOW_FROM` (default: all) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>), see [Stats Monitoring](#stats-monitoring) for details.
+- `NGINX_STATUS_PORT` (default: 81) sets the port to run the status module on. See [Stats Monitoring](#stats-monitoring) for details.
+- `PROXY_TIMEOUT` (default: 60s) sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout
+- `PROXY_TIMEOUT` (default: 60s) sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values.
+
 
 ## Stats Monitoring
 
 We've enabled `http_stub_status_module` access to help with monitoring integration. By default it is listening on port _81_ with `allow all` as restriction. You can customize this with:
-
-- `NGINX_STATUS_PORT` (default `81`) a port to run the status module on
-- `NGINX_STATUS_ALLOW_FROM` (default `all`) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>)
+- `NGINX_STATUS_PORT`
+- `NGINX_STATUS_ALLOW_FROM`
 
 ## Local debugging
 
-To check the connection between your app and the nginx reverse proxy sidecar, `docker compose up`:
+To check the connection between your app and the nginx reverse proxy sidecar you can use docker compose. First you have to download the image from our `platform` account.
+
+- Get AWS credentials for our `platform` account, readonly is fine.
+- Run `./scripts/download_image <version>`, by default `staging` will be downloaded.
+
+Then run `docker compose up`:
 
 ```yaml
 version: "3.9"
@@ -32,7 +120,7 @@ services:
 
 sidecar:
     container_name: "foo-sidecar"
-    image: "deliveroo/nginx-sidecar:0.3.9"
+    image: "930404128139.dkr.ecr.eu-west-1.amazonaws.com/nginx-sidecar:<VERSION>"
     ports:
       - "8001:8001"
     links:
@@ -45,85 +133,11 @@ sidecar:
       - APP_HOST=app
 ```
 
-## Optional Requirements
-
-- `PROXY_TIMEOUT` sets proxy_connect_timeout, proxy_send_timeout, proxy_read_timeout values. (default: 60s)
-- `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` configures the included access logs.  Use a regex like `^[45]` to include only 4xx and 5xx status codes. The default will log every status code.
-- `NGINX_KEEPALIVE_TIMEOUT` sets keepalive_timeout. (default: 20s)
-- `NGINX_CLIENT_MAX_BODY_SIZE` sets the maximum request body size (default: 5MB)
-
-## Example
-
-[AWS documentation](https://aws.amazon.com/blogs/compute/nginx-reverse-proxy-sidecar-container-on-amazon-ecs/) shows how to deploy this type of sidecare into `AWS Elastic Container Service ( ECS )`:
-
-```yaml
-# ...
-
-services:
-  web:
-    containerDefinitions:
-      # Your application container, defined as normal, but without any `portMappings` section:
-      app:
-        cpu: 1024
-        memory: 1024
-        essential: true
-        command: "exec puma -p 3001 -C config/puma.rb"
-
-      # A separate `containerDefinition` should be added for the nginx sidecar.
-      # The sidecar doesn't care what this is called, but it'll need to match the `process_name` in your app's Terraform, as this is where Hopper expects to find the bound port.
-      web:
-        # Pin to a specific image of the nginx-sidecar.
-        image: deliveroo/nginx-sidecar:0.3.9
-        cpu: 128
-        memory: 256
-        essential: true
-
-        # Link your `app` to this container, so that the nginx sidecar can forward requests.
-        # If your app container is named something else (e.g. `appcontainer`), you can use
-        # `appcontainer:app` to specify it.
-        links:
-        - app
-
-        # Port the container is listening on. Should match the definition of the service in Terraform.
-        portMappings:
-        - containerPort: 3000
-
-        # Specify which port nginx should listen on (should match the `portMappings` above), and
-        # which port the `app` is listening on.
-        environment:
-        - name: NGINX_PORT
-          value: '3000'
-        - name: APP_HOST
-          value: 'app'
-        - name: APP_PORT
-          value: '3001'
-        # If you want to customize monitoring status endpoint
-        - name: NGINX_PORT
-          value: '18081'
-        - name: NGINX_STATUS_ALLOW_FROM
-          value: '172.0.0.0/8'
-        # If you want a custom timeout for the request
-        - name: PROXY_TIMEOUT
-          value: '10s'
-
-        # If your datadog agent has Autodiscovery enabled, you can provide additional docker labels
-        # in order to expose them
-        dockerLabels:
-          com.datadoghq.ad.check_names: '["nginx"]'
-          com.datadoghq.ad.init_configs: '[{}]'
-          com.datadoghq.ad.instances: '[{"nginx_status_url": "http://%%host%%:81/nginx_status/"}]'
-
-  # ...
-```
-
 ## Contributing
 
-The CI for the master branch reads the `VERSION` file and creates a new tag `deliveroo/nginx-sidecar:VERSION` if it doesn't already exist. The `VERSION` should be incremented each time changes are made.
+This repository has a `staging` branch that builds and pushes the image with a `staging` to allow changes to be tested before merging and bumping `VERSION`.
 
-### Staging
+The CI for the master branch reads the `VERSION` file and creates a new image tag `nginx:VERSION` if it doesn't already exist. A `latest` version tag is also added for ease of use.
+Any push to the staging branch will upload the image with the tag `staging`.
 
-This repository has a `staging` branch that pushes to a `deliveroo/nginx-sidecar:staging` tag in Docker Hub, to allow changes to be tested before merging and bumping `VERSION`.
-
-## Future
-
-This relies on the legacy `--link` flag of Docker/ECS and requires the `bridged` networking mode.
+The `VERSION` should be incremented each time changes are made.
