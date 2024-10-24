@@ -34,14 +34,10 @@ services:
   web:
     sidecars:
       nginx:
-        # Needs to match your service name, in this case it's 'web', because nginx
-        # will be the main entry container for your service.
-        container_name: web
-        # The port Nginx will listen on, i.e. the port the ALB should forward requests to.
-        # This must match the port you've defined for your service with `roo-service`
+        # By default the Nginx container will be named after the service, in this case "web"
+        # and by defining an Nginx port we will assume your app container uses the same port.
+        # Note: both the container name and the app port are configurable if needed
         nginx_port: 8008
-        # The port your application container is listening on. Nginx will forward requests to this port.
-        app_port: 8008
     containerDefinitions:
       # Your application container, defined as normal, but named 'app'
       # Note: you can change the container name you use here, see the
@@ -49,7 +45,6 @@ services:
       app:
         cpu: 1024
         memory: 1024
-        essential: true
         command: "exec puma -p 3001 -C config/puma.rb"
   # ...
 ```
@@ -57,11 +52,21 @@ services:
 
 ## Requirements
 
-There are three requirements when defining an `nginx` sidecar in Hopper:
+There is only one requiremented field when defining an `nginx` sidecar in Hopper:
 
 - `nginx_port` must be set to the port nginx should bind to.
-- `app_port` must be set to the port that the application is bound to inside the `app` container.
-- `container_name` must be set to the name of your service, e.g. if your service is called `web` then this field is `web`.
+
+### App port
+
+`app_port` can be set to define what port your application container is listening on and this is the port `nginx` will forward requests to.
+
+By default if you don't define an `app_port` then it will be set to the value of `nginx_port`.
+
+### Nginx Container Name
+
+`container_name` can be set to change the name of the `nginx` container.
+
+By default the container name will be set to the name of the service which is usually what you want.
 
 ## Optional Customisations
 
