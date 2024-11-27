@@ -20,6 +20,7 @@ fi
   -e "s:<PROXY_TIMEOUT>:${PROXY_TIMEOUT:-60s}:g" \
   -e "s:<NGINX_KEEPALIVE_TIMEOUT>:${NGINX_KEEPALIVE_TIMEOUT:-20s}:g" \
   -e "s:<NGINX_CLIENT_MAX_BODY_SIZE>:${NGINX_CLIENT_MAX_BODY_SIZE:-5M}:g" \
+  -e "s:<NGINX_LARGE_CLIENT_HEADER_BUFFERS>:${NGINX_LARGE_CLIENT_HEADER_BUFFERS:-4 8k}:g" \
   /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 while sleep 2; do

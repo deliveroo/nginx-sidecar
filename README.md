@@ -93,6 +93,7 @@ Here is a list of available customisation environment variables:
 - `APP_HOST` (default: app) the name of your application container. You can use this if you want to give your application container a more meaningful name.
 - `CLIENT_BODY_BUFFER_SIZE` (default: 8k) sets the client_body_buffer_size.
 - `NGINX_CLIENT_MAX_BODY_SIZE` (default: 5MB) sets the maximum request body size.
+- `NGINX_LARGE_CLIENT_HEADER_BUFFERS` (default: `4 8k`) sets the maximum size for a single request header. Most commonly hit by the `Cookie` header.
 - `NGINX_KEEPALIVE_TIMEOUT` (default: 20s) sets keepalive_timeout.
 - `NGINX_LOGS_INCLUDE_STATUS_CODE_REGEX` (default: not set, log all) configures the included access logs.  Use a regex like `^[45]` to include only 4xx and 5xx status codes.
 - `NGINX_STATUS_ALLOW_FROM` (default: all) IP, CIDR, `all` for the nginx config's `allow` statement (<http://nginx.org/en/docs/http/ngx_http_access_module.html>), see [Stats Monitoring](#stats-monitoring) for details.
