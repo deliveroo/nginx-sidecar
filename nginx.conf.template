@@ -96,6 +96,7 @@ http {
 
     client_body_buffer_size <CLIENT_BODY_BUFFER_SIZE>;
     client_max_body_size <NGINX_CLIENT_MAX_BODY_SIZE>;
+    large_client_header_buffers <NGINX_LARGE_CLIENT_HEADER_BUFFERS>;
 
     location / {
       proxy_pass_request_headers on;

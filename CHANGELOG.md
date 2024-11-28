@@ -1,5 +1,9 @@
 #  changelog
 
+## 0.3.22
+
+- Allow override of `large_client_header_buffers` via `NGINX_LARGE_CLIENT_HEADER_BUFFERS` environment variable. Keeping the default to `4 8k` if not set ([docs](https://nginx.org/en/docs/http/ngx_http_core_module.html#large_client_header_buffers)).
+
 ## 0.3.21
 
 - Double dispatch `nginx-sidecar` image to Dockerhub and our private ECR Repo in our `platform` account.
